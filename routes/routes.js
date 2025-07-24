@@ -65,5 +65,7 @@ router.get('/productos/agregar', productoController.mostrarFormularioAgregar);
 router.post('/productos/agregar', productoController.agregarProducto);
 router.get('/productos/editar/:id', productoController.mostrarFormularioEditar);
 router.post('/productos/editar/:id', productoController.modificarProducto);
+router.get('/productos/bajo-stock', productoController.listarProductosBajoStock);
+
 
 module.exports = router;

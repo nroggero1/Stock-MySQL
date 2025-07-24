@@ -47,6 +47,11 @@ async function getProductoPorId(id) {
 // Insertar nuevo producto
 async function insertarProducto(producto) {
   try {
+    // Cálculo del precio sugerido en el backend
+    const precioVentaSugerido = parseFloat(
+      (producto.PrecioCompra * (1 + producto.PorcentajeGanancia / 100)).toFixed(2)
+    );
+
     let pool = await sql.connect(config);
     await pool.request()
       .input('Nombre', sql.NVarChar, producto.Nombre)
@@ -56,7 +61,7 @@ async function insertarProducto(producto) {
       .input('IdMarca', sql.Int, producto.IdMarca)
       .input('PrecioCompra', sql.Decimal(12, 2), producto.PrecioCompra)
       .input('PorcentajeGanancia', sql.Int, producto.PorcentajeGanancia)
-      .input('PrecioVentaSugerido', sql.Decimal(12, 2), producto.PrecioVentaSugerido)
+      .input('PrecioVentaSugerido', sql.Decimal(12, 2), precioVentaSugerido)
       .input('PrecioVenta', sql.Decimal(12, 2), producto.PrecioVenta)
       .input('Stock', sql.Int, producto.Stock)
       .input('StockMinimo', sql.Int, producto.StockMinimo)
@@ -76,6 +81,10 @@ async function insertarProducto(producto) {
 // Actualizar producto existente
 async function actualizarProducto(id, producto) {
   try {
+    const precioVentaSugerido = parseFloat(
+      (producto.PrecioCompra * (1 + producto.PorcentajeGanancia / 100)).toFixed(2)
+    );
+
     let pool = await sql.connect(config);
     await pool.request()
       .input('Id', sql.Int, id)
@@ -86,7 +95,7 @@ async function actualizarProducto(id, producto) {
       .input('IdMarca', sql.Int, producto.IdMarca)
       .input('PrecioCompra', sql.Decimal(12, 2), producto.PrecioCompra)
       .input('PorcentajeGanancia', sql.Int, producto.PorcentajeGanancia)
-      .input('PrecioVentaSugerido', sql.Decimal(12, 2), producto.PrecioVentaSugerido)
+      .input('PrecioVentaSugerido', sql.Decimal(12, 2), precioVentaSugerido)
       .input('PrecioVenta', sql.Decimal(12, 2), producto.PrecioVenta)
       .input('Stock', sql.Int, producto.Stock)
       .input('StockMinimo', sql.Int, producto.StockMinimo)
@@ -112,9 +121,41 @@ async function actualizarProducto(id, producto) {
   }
 }
 
+// Obtener productos con stock por debajo o igual al mínimo
+async function getProductosBajoStock() {
+  try {
+    let pool = await sql.connect(config);
+    let result = await pool.request().query(`
+      SELECT 
+        Producto.Id,
+        Producto.Nombre,
+        Producto.Descripcion,
+        Producto.CodigoBarras,
+        Producto.PrecioCompra,
+        Producto.PorcentajeGanancia,
+        Producto.PrecioVentaSugerido,
+        Producto.PrecioVenta,
+        Producto.Stock,
+        Producto.StockMinimo,
+        Producto.Activo,
+        Producto.FechaAlta,
+        Marca.Nombre AS Marca,
+        Categoria.Nombre AS Categoria
+      FROM Producto
+      JOIN Marca ON Producto.IdMarca = Marca.Id
+      JOIN Categoria ON Producto.IdCategoria = Categoria.Id
+      WHERE Producto.Stock <= Producto.StockMinimo
+    `);
+    return result.recordset;
+  } catch (err) {
+    throw err;
+  }
+}
+
 module.exports = {
   getProductos,
   getProductoPorId,
   insertarProducto,
-  actualizarProducto
+  actualizarProducto,
+  getProductosBajoStock
 };

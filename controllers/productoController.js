@@ -85,10 +85,21 @@ async function modificarProducto(req, res) {
   }
 }
 
+// Listar productos con stock menor o igual al mínimo
+async function listarProductosBajoStock(req, res) {
+  try {
+    const productos = await productoModel.getProductosBajoStock();
+    res.render('producto/productoBajoStock', { productos });
+  } catch (error) {
+    res.status(500).send('Error al obtener productos con bajo stock: ' + error.message);
+  }
+}
+
 module.exports = {
   listarProductos,
   mostrarFormularioAgregar,
   agregarProducto,
   mostrarFormularioEditar,
-  modificarProducto
+  modificarProducto,
+  listarProductosBajoStock
 };
