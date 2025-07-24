@@ -1,0 +1,18 @@
+<%- include('../header') %>
+
+<h2>Editar Marca</h2>
+<form method="POST" action="/marcas/editar/<%= marca.Id %>">
+  <label>Nombre:</label>
+  <input type="text" name="nombre" value="<%= marca.Nombre %>" required>
+  <label>Activo:</label>
+  <select name="activo">
+    <option value="1" <%= marca.Activo ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !marca.Activo ? 'selected' : '' %>>No</option>
+  </select>
+  <input type="hidden" name="id" value="<%= marca.Id %>">
+  <br>
+  <br>
+    <button type="submit">Actualizar</button>
+</form>
+
+<%- include('../footer') %>

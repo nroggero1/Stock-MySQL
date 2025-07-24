@@ -1,0 +1,45 @@
+<%- include('../header') %>
+
+<h2>Modificar Cliente</h2>
+
+<form method="POST" action="/clientes/editar/<%= cliente.Id %>">
+    <label>Código tributario:</label>
+    <input type="text" name="codigoTributario" value="<%= cliente.CodigoTributario %>" required><br>
+
+    <label>Denominación:</label>
+    <input type="text" name="denominacion" value="<%= cliente.Denominacion %>" required><br>
+
+    <label>Dirección:</label>
+    <input type="text" name="direccion" value="<%= cliente.Direccion %>" required><br>
+
+    <label>Provincia:</label>
+    <select id="provinciaSelect" name="provincia" required>
+        <option value="">Seleccione una provincia</option>
+        <% provincias.forEach(p => { %>
+            <option value="<%= p.Id %>" <%= cliente.IdProvincia === p.Id ? 'selected' : '' %>><%= p.Nombre %></option>
+        <% }) %>
+    </select><br>
+
+    <label>Localidad:</label>
+    <select id="localidadSelect" name="localidad" required data-selected="<%= cliente.IdLocalidad %>">
+        <option value="">Seleccione una localidad</option>
+    </select><br>
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" value="<%= cliente.Telefono %>" required><br>
+
+    <label>Email:</label>
+    <input type="email" name="mail" value="<%= cliente.Mail %>" required><br>
+
+    <label>Activo:</label>
+    <select name="activo">
+        <option value="1" <%= cliente.Activo ? 'selected' : '' %>>Sí</option>
+        <option value="0" <%= !cliente.Activo ? 'selected' : '' %>>No</option>
+    </select><br><br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<script src="/functions/filtrosProvinciasYCiudades.js"></script>
+
+<%- include('../footer') %>

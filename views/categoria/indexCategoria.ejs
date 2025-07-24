@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorias</title>
+</head>
+<body>
+
+    <%- include('../header') %>
+
+<h2>Listado de Categorías</h2>
+<a href="/categorias/agregar">Agregar nueva categoría</a>
+<br>
+<br>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Activo</th>
+      <th>Fecha de alta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% categorias.forEach(c => { %>
+      <tr>
+        <td><%= c.Id %></td>
+        <td><%= c.Nombre %></td>
+        <td><%= c.Activo ? 'Sí' : 'No' %></td>
+        <td>
+          <%= new Date(c.FechaAlta).toISOString().slice(0,10).replace(/-/g, '/') %>
+        </td>
+        <td>
+          <a href="/categorias/editar/<%= c.Id %>">Editar</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('../footer') %>
+    
+</body>
+</html>

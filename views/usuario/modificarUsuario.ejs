@@ -1,0 +1,40 @@
+<%- include('../header') %>
+
+<h2>Editar Usuario</h2>
+<form method="POST" action="/usuarios/editar/<%= usuario.Id %>">
+  <label>Nombre de usuario:</label>
+  <input type="text" name="nombreUsuario" value="<%= usuario.NombreUsuario %>" required>
+  <br>
+    <label>Clave:</label>
+  <input type="text" name="clave" value="<%= usuario.Clave %>" required>
+  <br>
+  <label>Nombre:</label>
+  <input type="text" name="nombre" value="<%= usuario.Nombre %>" required>
+  <br>
+    <label>Apellido:</label>
+  <input type="text" name="apellido" value="<%= usuario.Apellido %>" required>
+  <br>
+    <label>Email:</label>
+  <input type="email" name="mail" value="<%= usuario.Mail %>" required>
+  <br>
+      <label>Fecha de nacimiento:</label>
+  <input type="date" name="fechaNacimiento" value="<%= usuario.FechaNacimiento ? new Date(usuario.FechaNacimiento).toISOString().slice(0,10) : '' %>" required>
+  <br>
+    <label>Administrador:</label>
+  <select name="administrador">
+    <option value="1" <%= usuario.Administrador ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !usuario.Administrador ? 'selected' : '' %>>No</option>
+  </select>
+  <br>
+  <label>Activo:</label>
+  <select name="activo">
+    <option value="1" <%= usuario.Activo ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !usuario.Activo ? 'selected' : '' %>>No</option>
+  </select>
+  <input type="hidden" name="id" value="<%= usuario.Id %>">
+  <br>
+  <br>
+    <button type="submit">Actualizar</button>
+</form>
+
+<%- include('../footer') %>

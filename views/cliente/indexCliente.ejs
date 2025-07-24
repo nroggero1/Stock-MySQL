@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes</title>
+</head>
+<body>
+
+    <%- include('../header') %>
+
+<h2>Listado de clientes</h2>
+<a href="/clientes/agregar">Agregar nuevo cliente</a>
+<br>  
+<br>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Codigo tributario</th>
+      <th>Denominacion</th>
+      <th>Direccion</th>
+      <th>Localidad</th>
+      <th>Provincia</th>
+      <th>Telefono</th>
+      <th>Mail</th>
+      <th>Activo</th>
+      <th>Fecha de alta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% clientes.forEach(p => { %>
+      <tr>
+        <td><%= p.Id %></td>
+        <td><%= p.CodigoTributario %></td>
+        <td><%= p.Denominacion %></td>
+        <td><%= p.Direccion %></td>
+        <td><%= p.Localidad %></td>
+        <td><%= p.Provincia %></td>
+        <td><%= p.Telefono %></td>
+        <td><%= p.Mail %></td>
+        <td><%= p.Activo ? 'Sí' : 'No' %></td>
+        <td>
+          <%= new Date(p.FechaAlta).toISOString().slice(0,10).replace(/-/g, '/') %>
+        </td>
+        <td>
+          <a href="/clientes/editar/<%= p.Id %>">Editar</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('../footer') %>
+    
+</body>
+</html>

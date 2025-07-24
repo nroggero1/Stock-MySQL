@@ -1,0 +1,18 @@
+<%- include('../header') %>
+
+<h2>Editar Categoría</h2>
+<form method="POST" action="/categorias/editar/<%= categoria.Id %>">
+  <label>Nombre:</label>
+  <input type="text" name="nombre" value="<%= categoria.Nombre %>" required>
+  <label>Activo:</label>
+  <select name="activo">
+    <option value="1" <%= categoria.Activo ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !categoria.Activo ? 'selected' : '' %>>No</option>
+  </select>
+  <input type="hidden" name="id" value="<%= categoria.Id %>">
+  <br>
+  <br>
+    <button type="submit">Actualizar</button>
+</form>
+
+<%- include('../footer') %>

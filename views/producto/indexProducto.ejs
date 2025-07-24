@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+</head>
+<body>
+
+  <%- include('../header') %>
+
+  <h2>Listado de productos</h2>
+  <a href="/productos/agregar">Agregar nuevo producto</a>
+  <br>
+  <br>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Código de barras</th>
+        <th>Categoría</th>
+        <th>Marca</th>
+        <th>Precio compra</th>
+        <th>% Ganancia</th>
+        <th>Precio venta sugerido</th>
+        <th>Precio venta</th>
+        <th>Stock</th>
+        <th>Stock mínimo</th>
+        <th>Activo</th>
+        <th>Fecha alta</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% productos.forEach(p => { %>
+        <tr>
+          <td><%= p.Id %></td>
+          <td><%= p.Nombre %></td>
+          <td><%= p.Descripcion %></td>
+          <td><%= p.CodigoBarras %></td>
+          <td><%= p.Categoria %></td>
+          <td><%= p.Marca %></td>
+          <td>$<%= p.PrecioCompra.toFixed(2) %></td>
+          <td><%= p.PorcentajeGanancia %> %</td>
+          <td>$<%= p.PrecioVentaSugerido.toFixed(2) %></td>
+          <td>$<%= p.PrecioVenta.toFixed(2) %></td>
+          <td><%= p.Stock %></td>
+          <td><%= p.StockMinimo %></td>
+          <td><%= p.Activo ? 'Sí' : 'No' %></td>
+          <td><%= new Date(p.FechaAlta).toISOString().slice(0, 10).replace(/-/g, '/') %></td>
+          <td>
+            <a href="/productos/editar/<%= p.Id %>">Editar</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <%- include('../footer') %>
+
+</body>
+</html>

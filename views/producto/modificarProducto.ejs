@@ -1,0 +1,60 @@
+<%- include('../header') %> 
+
+<h2>Modificar Producto</h2>
+
+<form method="POST" action="/productos/editar/<%= producto.Id %>">
+    <label>Nombre:</label><br>
+    <input type="text" name="nombre" value="<%= producto.Nombre %>" required><br><br>
+
+    <label>Descripción:</label><br>
+    <input type="text" name="descripcion" value="<%= producto.Descripcion %>" required><br><br>
+
+    <label>Código de barras:</label><br>
+    <input type="text" name="codigoBarras" value="<%= producto.CodigoBarras %>" required pattern="\d+" title="Solo números"><br><br>
+
+    <label>Marca:</label><br>
+    <select id="marcaSelect" name="marca" required>
+        <option value="">Seleccione una marca</option>
+        <% marcas.forEach(m => { %>
+            <option value="<%= m.Id %>" <%= producto.IdMarca === m.Id ? 'selected' : '' %>><%= m.Nombre %></option>
+        <% }) %>
+    </select><br><br>
+
+    <label>Categoría:</label><br>
+    <select id="categoriaSelect" name="categoria" required>
+        <option value="">Seleccione una categoría</option>
+        <% categorias.forEach(c => { %>
+            <option value="<%= c.Id %>" <%= producto.IdCategoria === c.Id ? 'selected' : '' %>><%= c.Nombre %></option>
+        <% }) %>
+    </select><br><br>
+
+    <label>Precio de compra:</label><br>
+    <input type="number" name="precioCompra" value="<%= producto.PrecioCompra %>" step="0.01" min="0" required><br><br>
+
+    <label>Porcentaje de ganancia (%):</label><br>
+    <input type="number" name="porcentajeGanancia" value="<%= producto.PorcentajeGanancia %>" step="1" min="0" max="100" required><br><br>
+
+    <label>Precio de venta sugerido:</label><br>
+    <input type="number" name="precioVentaSugerido" value="<%= producto.PrecioVentaSugerido %>" step="0.01" disabled placeholder="Se calcula automáticamente"><br><br>
+
+    <label>Precio de venta:</label><br>
+    <input type="number" name="precioVenta" value="<%= producto.PrecioVenta %>" step="0.01" min="0" required><br><br>
+
+    <label>Stock:</label><br>
+    <input type="number" name="stock" value="<%= producto.Stock %>" min="0" required><br><br>
+
+    <label>Stock mínimo:</label><br>
+    <input type="number" name="stockMinimo" value="<%= producto.StockMinimo %>" min="0" required><br><br>
+
+    <label>Activo:</label><br>
+    <select name="activo" required>
+        <option value="1" <%= producto.Activo ? 'selected' : '' %>>Sí</option>
+        <option value="0" <%= !producto.Activo ? 'selected' : '' %>>No</option>
+    </select><br><br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<script src="/functions/calculosPreciosSugeridos.js"></script>
+
+<%- include('../footer') %>
