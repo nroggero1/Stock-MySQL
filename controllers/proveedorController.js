@@ -5,7 +5,7 @@ const provinciaModel = require('../models/provinciaModel');
 exports.listarProveedores = async (req, res) => {
     try {
         const proveedores = await proveedorModel.getProveedores();
-        res.render('proveedor/indexProveedor', { proveedores });
+        res.render('proveedor/indexProveedor', { proveedores, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al obtener proveedores:', err);
         res.status(500).send('Error al obtener proveedores');
@@ -16,7 +16,7 @@ exports.listarProveedores = async (req, res) => {
 exports.formAgregarProveedor = async (req, res) => {
     try {
         const provincias = await provinciaModel.getProvincias();
-        res.render('proveedor/agregarProveedor', { provincias, proveedor: {} });
+        res.render('proveedor/agregarProveedor', { provincias, proveedor: {}, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al cargar formulario de agregar proveedor:', err);
         res.status(500).send('Error al cargar formulario');
@@ -27,7 +27,6 @@ exports.formAgregarProveedor = async (req, res) => {
 exports.agregarProveedor = async (req, res) => {
     try {
         const datos = req.body;
-
         await proveedorModel.insertarProveedor({
             CodigoTributario: BigInt(datos.codigoTributario),
             Denominacion: datos.denominacion,
@@ -38,7 +37,6 @@ exports.agregarProveedor = async (req, res) => {
             Activo: datos.activo === '1' ? 1 : 0,
             IdProvincia: parseInt(datos.provincia)
         });
-
         res.redirect('/proveedores');
     } catch (err) {
         console.error('Error al agregar proveedor:', err);
@@ -52,7 +50,7 @@ exports.formModificarProveedor = async (req, res) => {
         const id = req.params.id;
         const proveedor = await proveedorModel.getProveedorPorId(id);
         const provincias = await provinciaModel.getProvincias();
-        res.render('proveedor/modificarProveedor', { proveedor, provincias });
+        res.render('proveedor/modificarProveedor', { proveedor, provincias, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al obtener proveedor:', err);
         res.status(500).send('Error al obtener proveedor');
@@ -64,7 +62,6 @@ exports.modificarProveedor = async (req, res) => {
     try {
         const id = req.params.id;
         const datos = req.body;
-
         await proveedorModel.actualizarProveedor(id, {
             CodigoTributario: BigInt(datos.codigoTributario),
             Denominacion: datos.denominacion,
@@ -75,7 +72,6 @@ exports.modificarProveedor = async (req, res) => {
             Activo: datos.activo === '1' ? 1 : 0,
             IdProvincia: parseInt(datos.provincia)
         });
-
         res.redirect('/proveedores');
     } catch (err) {
         console.error('Error al modificar proveedor:', err);

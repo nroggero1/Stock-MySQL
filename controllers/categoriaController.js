@@ -4,16 +4,16 @@ const categoriaModel = require('../models/categoriaModel');
 exports.listarCategorias = async (req, res) => {
     try {
         const categorias = await categoriaModel.getCategorias();
-        res.render('categoria/indexCategoria', { categorias });
+        res.render('categoria/indexCategoria', { categorias, usuario: req.session.usuario });
     } catch (err) {
-        console.error('Error al obtener categorías:', err); // <-- Agrega esto
+        console.error('Error al obtener categorías:', err);
         res.status(500).send('Error al obtener categorías');
     }
 };
 
 // Mostrar formulario para agregar categoría
 exports.formAgregarCategoria = (req, res) => {
-    res.render('categoria/agregarCategoria');
+    res.render('categoria/agregarCategoria', { usuario: req.session.usuario });
 };
 
 // Agregar una nueva categoría
@@ -33,7 +33,7 @@ exports.formModificarCategoria = async (req, res) => {
         const id = req.params.id;
         const categorias = await categoriaModel.getCategorias();
         const categoria = categorias.find(cat => cat.Id == id);
-        res.render('categoria/modificarCategoria', { categoria });
+        res.render('categoria/modificarCategoria', { categoria, usuario: req.session.usuario });
     } catch (err) {
         res.status(500).send('Error al cargar categoría');
     }
@@ -46,7 +46,7 @@ exports.modificarCategoria = async (req, res) => {
         const categorias = await categoriaModel.getCategorias();
         const categoria = categorias.find(cat => cat.Id == id);
         const fechaAlta = categoria.FechaAlta;
-        const activoBool = activo === "1" ? true : false; // Conversión
+        const activoBool = activo === "1";
         await categoriaModel.modificarCategoria(id, nombre, fechaAlta, activoBool);
         res.redirect('/categorias');
     } catch (err) {
@@ -64,4 +64,4 @@ exports.eliminarCategoria = async (req, res) => {
     } catch (err) {
         res.status(500).send('Error al eliminar categoría');
     }
-  }
+};

@@ -5,7 +5,7 @@ const provinciaModel = require('../models/provinciaModel');
 exports.listarClientes = async (req, res) => {
     try {
         const clientes = await clienteModel.getClientes();
-        res.render('cliente/indexCliente', { clientes });
+        res.render('cliente/indexCliente', { clientes, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al obtener clientes:', err);
         res.status(500).send('Error al obtener clientes');
@@ -16,7 +16,7 @@ exports.listarClientes = async (req, res) => {
 exports.formAgregarCliente = async (req, res) => {
     try {
         const provincias = await provinciaModel.getProvincias();
-        res.render('cliente/agregarCliente', { provincias, cliente: {} });
+        res.render('cliente/agregarCliente', { provincias, cliente: {}, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al cargar formulario de agregar cliente:', err);
         res.status(500).send('Error al cargar formulario');
@@ -27,7 +27,6 @@ exports.formAgregarCliente = async (req, res) => {
 exports.agregarCliente = async (req, res) => {
     try {
         const datos = req.body;
-
         await clienteModel.insertarCliente({
             CodigoTributario: BigInt(datos.codigoTributario),
             Denominacion: datos.denominacion,
@@ -38,7 +37,6 @@ exports.agregarCliente = async (req, res) => {
             Activo: datos.activo === '1' ? 1 : 0,
             IdProvincia: parseInt(datos.provincia)
         });
-
         res.redirect('/clientes');
     } catch (err) {
         console.error('Error al agregar cliente:', err);
@@ -52,7 +50,7 @@ exports.formModificarCliente = async (req, res) => {
         const id = req.params.id;
         const cliente = await clienteModel.getClientePorId(id);
         const provincias = await provinciaModel.getProvincias();
-        res.render('cliente/modificarCliente', { cliente, provincias });
+        res.render('cliente/modificarCliente', { cliente, provincias, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al obtener cliente:', err);
         res.status(500).send('Error al obtener cliente');
@@ -64,7 +62,6 @@ exports.modificarCliente = async (req, res) => {
     try {
         const id = req.params.id;
         const datos = req.body;
-
         await clienteModel.actualizarCliente(id, {
             CodigoTributario: BigInt(datos.codigoTributario),
             Denominacion: datos.denominacion,
@@ -75,7 +72,6 @@ exports.modificarCliente = async (req, res) => {
             Activo: datos.activo === '1' ? 1 : 0,
             IdProvincia: parseInt(datos.provincia)
         });
-
         res.redirect('/clientes');
     } catch (err) {
         console.error('Error al modificar cliente:', err);
