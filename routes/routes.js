@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const verificarAutenticacion = require('../middlewares/authMiddleware');
 
+const loginController = require('../controllers/loginController');
 const categoriaController = require('../controllers/categoriaController');
 const marcaController = require('../controllers/marcaController'); 
 const provinciaController = require('../controllers/provinciaController');
@@ -10,7 +11,7 @@ const usuarioController = require('../controllers/usuarioController');
 const proveedorController = require('../controllers/proveedorController');
 const clienteController = require('../controllers/clienteController');
 const productoController = require('../controllers/productoController');
-const loginController = require('../controllers/loginController');
+const compraController = require('../controllers/compraController');
 
 // Rutas de login/logout (sin protección)
 router.get('/login', loginController.mostrarLogin);
@@ -74,5 +75,8 @@ router.post('/productos/agregar', verificarAutenticacion, productoController.agr
 router.get('/productos/editar/:id', verificarAutenticacion, productoController.mostrarFormularioEditar);
 router.post('/productos/editar/:id', verificarAutenticacion, productoController.modificarProducto);
 router.get('/productos/stock-bajo', verificarAutenticacion, productoController.listarProductosBajoStock);
+
+// Rutas de compra
+router.get('/compras', verificarAutenticacion, compraController.listarCompras);
 
 module.exports = router;

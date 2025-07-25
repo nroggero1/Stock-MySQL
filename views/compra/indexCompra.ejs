@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compras</title>
+  </head>
+  <body>
+    <%- include('../header') %>
+
+    <h2>Listado de compras</h2>
+    <a href="/compras/agregar">Agregar nueva compra</a>
+    <br />
+    <br />
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Codigo tributario</th>
+          <th>Denominacion</th>
+          <th>Importe</th>
+          <th>Fecha</th>
+          <th>Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% compras.forEach(c => { %>
+        <tr>
+          <td><%= c.Id %></td>
+          <td><%= c.CodigoTributario %></td>
+          <td><%= c.Denominacion %></td>
+          <td><%= c.Importe %></td>
+          <td>
+            <%= c.Fecha ? new
+            Date(c.Fecha).toISOString().slice(0,10).replace(/-/g, '/') : '' %>
+          </td>
+          <td><%= c.Usuario %></td>
+          <td>
+            <a href="/compras/editar/<%= c.Id %>">Editar</a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <%- include('../footer') %>
+  </body>
+</html>
