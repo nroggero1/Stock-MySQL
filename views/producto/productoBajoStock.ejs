@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Productos con Stock Bajo</title>
-  <link rel="stylesheet" href="/estilos.css" />
-</head>
-<body>
-
+  <h2>Productos con Stock Bajo</h2>
   <%- include('../header') %>
 
   <h2>Productos con Stock Bajo</h2>
+  
   <table>
     <thead>
       <tr>
@@ -25,8 +17,7 @@
     </thead>
     <tbody>
       <% productos.forEach(p => { %>
-        <tr>
-          <td><%= p.Id %></td>
+        <tr>         <td><%= p.Id %></td>
           <td><%= p.Nombre %></td>
           <td><%= p.Descripcion %></td>
           <td><%= p.Categoria %></td>
@@ -40,5 +31,4 @@
 
   <%- include('../footer') %>
 
-</body>
-</html>
+
