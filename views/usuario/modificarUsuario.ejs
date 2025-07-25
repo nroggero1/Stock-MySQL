@@ -1,40 +1,46 @@
 <%- include('../header') %>
 
 <h2>Editar Usuario</h2>
-<form method="POST" action="/usuarios/editar/<%= usuario.Id %>">
+<form method="POST" action="/usuarios/editar/<%= usuarioMod.Id %>">
   <label>Nombre de usuario:</label>
-  <input type="text" name="nombreUsuario" value="<%= usuario.NombreUsuario %>" required>
+  <input type="text" name="nombreUsuario" value="<%= usuarioMod.NombreUsuario %>" required>
   <br>
-    <label>Clave:</label>
-  <input type="text" name="clave" value="<%= usuario.Clave %>" required>
+
+  <label>Clave:</label>
+  <input type="text" name="clave" value="<%= usuarioMod.Clave %>" required>
   <br>
+
   <label>Nombre:</label>
-  <input type="text" name="nombre" value="<%= usuario.Nombre %>" required>
+  <input type="text" name="nombre" value="<%= usuarioMod.Nombre %>" required>
   <br>
-    <label>Apellido:</label>
-  <input type="text" name="apellido" value="<%= usuario.Apellido %>" required>
+
+  <label>Apellido:</label>
+  <input type="text" name="apellido" value="<%= usuarioMod.Apellido %>" required>
   <br>
-    <label>Email:</label>
-  <input type="email" name="mail" value="<%= usuario.Mail %>" required>
+
+  <label>Email:</label>
+  <input type="email" name="mail" value="<%= usuarioMod.Mail %>" required>
   <br>
-      <label>Fecha de nacimiento:</label>
-  <input type="date" name="fechaNacimiento" value="<%= usuario.FechaNacimiento ? new Date(usuario.FechaNacimiento).toISOString().slice(0,10) : '' %>" required>
+
+  <label>Fecha de nacimiento:</label>
+  <input type="date" name="fechaNacimiento" value="<%= usuarioMod.FechaNacimiento ? new Date(usuarioMod.FechaNacimiento).toISOString().slice(0, 10) : '' %>" required>
   <br>
-    <label>Administrador:</label>
+
+  <label>Administrador:</label>
   <select name="administrador">
-    <option value="1" <%= usuario.Administrador ? 'selected' : '' %>>Sí</option>
-    <option value="0" <%= !usuario.Administrador ? 'selected' : '' %>>No</option>
+    <option value="1" <%= usuarioMod.Administrador ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !usuarioMod.Administrador ? 'selected' : '' %>>No</option>
   </select>
   <br>
+
   <label>Activo:</label>
   <select name="activo">
-    <option value="1" <%= usuario.Activo ? 'selected' : '' %>>Sí</option>
-    <option value="0" <%= !usuario.Activo ? 'selected' : '' %>>No</option>
+    <option value="1" <%= usuarioMod.Activo ? 'selected' : '' %>>Sí</option>
+    <option value="0" <%= !usuarioMod.Activo ? 'selected' : '' %>>No</option>
   </select>
-  <input type="hidden" name="id" value="<%= usuario.Id %>">
-  <br>
-  <br>
-    <button type="submit">Actualizar</button>
+  <br><br>
+
+  <button type="submit">Actualizar</button>
 </form>
 
 <%- include('../footer') %>

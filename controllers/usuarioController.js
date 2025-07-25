@@ -33,6 +33,11 @@ exports.formModificarUsuario = async (req, res) => {
     try {
         const id = req.params.id;
         const usuarioMod = await usuarioModel.getUsuarioPorId(id);
+
+        if (!usuarioMod) {
+            return res.status(404).send('Usuario no encontrado');
+        }
+
         res.render('usuario/modificarUsuario', { usuarioMod, usuario: req.session.usuario });
     } catch (err) {
         console.error('Error al obtener usuario:', err);
@@ -50,5 +55,17 @@ exports.modificarUsuario = async (req, res) => {
     } catch (err) {
         console.error('Error al modificar usuario:', err);
         res.status(500).send('Error al modificar usuario');
+    }
+};
+
+// Eliminar usuario
+exports.eliminarUsuario = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await usuarioModel.eliminarUsuario(id);
+        res.redirect('/usuarios');
+    } catch (err) {
+        console.error('Error al eliminar usuario:', err);
+        res.status(500).send('Error al eliminar usuario');
     }
 };
