@@ -24,6 +24,8 @@
           <a href="/productos">Productos</a>
           <a href="/productos/stock-bajo">Stock Bajo</a>
           <a href="/logout">Cerrar sesión (<%= usuario.nombreUsuario %>)</a>
+        <% } else { %>
+          <a href="/login">Iniciar sesión</a>
         <% } %>
       </nav>
     </header>

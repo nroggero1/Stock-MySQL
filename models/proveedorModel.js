@@ -81,9 +81,27 @@ async function actualizarProveedor(id, proveedor) {
   }
 }
 
+//Obtener proveedores activos
+async function obtenerProveedoresActivos() {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query(`
+      SELECT Id, CodigoTributario, Denominacion
+      FROM Proveedor
+      WHERE Activo = 1
+    `);
+    return result.recordset;
+  } catch (error) {
+    console.error('Error al obtener proveedores:', error);
+    throw error;
+  }
+}
+
+
 module.exports = {
     getProveedores,
     getProveedorPorId,
     insertarProveedor,
-    actualizarProveedor
+    actualizarProveedor,
+    obtenerProveedoresActivos
 };

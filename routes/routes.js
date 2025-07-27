@@ -75,8 +75,11 @@ router.post('/productos/agregar', verificarAutenticacion, productoController.agr
 router.get('/productos/editar/:id', verificarAutenticacion, productoController.mostrarFormularioEditar);
 router.post('/productos/editar/:id', verificarAutenticacion, productoController.modificarProducto);
 router.get('/productos/stock-bajo', verificarAutenticacion, productoController.listarProductosBajoStock);
+router.get('/productos/buscar/:codigoBarras', verificarAutenticacion, productoController.buscarPorCodigoBarras);
 
 // Rutas de compra
 router.get('/compras', verificarAutenticacion, compraController.listarCompras);
+router.get('/compras/agregar', verificarAutenticacion, compraController.formAgregarCompra);
+router.post('/compras/agregar', verificarAutenticacion, compraController.agregarCompra);
 
 module.exports = router;

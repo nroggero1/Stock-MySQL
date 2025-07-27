@@ -1,0 +1,82 @@
+<%- include('../header') %>
+
+<h2 class="my-4">Agregar Compra</h2>
+
+<form method="POST" action="/compras/agregar" onsubmit="return prepararEnvioCompra()">
+  <div class="form-group">
+    <label for="idProveedor">Proveedor:</label>
+    <select id="idProveedor" name="idProveedor" class="form-control" required>
+      <option value="">Seleccione un proveedor</option>
+      <% proveedores.forEach(proveedor => { %>
+        <option value="<%= proveedor.Id %>"><%= proveedor.Denominacion %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <hr>
+
+  <!-- Código de barras y búsqueda -->
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="codigoBarras">Código de Barras:</label>
+      <div class="input-group">
+        <input type="text" id="codigoBarras" class="form-control" placeholder="Escanee o escriba código" />
+        <div class="input-group-append">
+          <button type="button" class="btn btn-primary" onclick="buscarProductoPorCodigo()">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Datos del producto -->
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="producto">Producto:</label>
+      <input type="text" id="producto" class="form-control" disabled />
+    </div>
+    <div class="form-group col-md-4">
+      <label for="marca">Marca:</label>
+      <input type="text" id="marca" class="form-control" disabled />
+    </div>
+    <div class="form-group col-md-4">
+      <label for="categoria">Categoría:</label>
+      <input type="text" id="categoria" class="form-control" disabled />
+    </div>
+  </div>
+
+  <!-- Cantidad + Botón Agregar -->
+  <div class="form-row align-items-end">
+    <div class="form-group col-md-4">
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" id="cantidad" class="form-control" placeholder="Cantidad" min="1" />
+    </div>
+    <div class="form-group col-md-2">
+      <button type="button" class="btn btn-success" onclick="agregarProducto()">Agregar</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Tabla de productos -->
+  <table id="tabla-productos" class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p class="font-weight-bold">Total: $<span id="importe-total-visual">0.00</span></p>
+
+  <!-- Campos ocultos para enviar datos -->
+  <input type="hidden" name="productos" id="productos-json" />
+  <input type="hidden" name="importe" id="importe-total" />
+
+  <button type="submit" class="btn btn-primary">Registrar Compra</button>
+</form>
+
+<script src="/functions/compras.js"></script>
+<%- include('../footer') %>
