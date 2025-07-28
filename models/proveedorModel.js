@@ -82,7 +82,7 @@ async function actualizarProveedor(id, proveedor) {
 }
 
 //Obtener proveedores activos
-async function obtenerProveedoresActivos() {
+async function getProveedoresActivos() {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
@@ -103,5 +103,5 @@ module.exports = {
     getProveedorPorId,
     insertarProveedor,
     actualizarProveedor,
-    obtenerProveedoresActivos
+    getProveedoresActivos
 };

@@ -17,7 +17,7 @@ exports.listarCompras = async (req, res) => {
 
 exports.formAgregarCompra = async (req, res) => {
   try {
-    const proveedores = await proveedorModel.obtenerProveedores();
+    const proveedores = await proveedorModel.getProveedoresActivos();
     res.render('compra/agregarCompra', {
       proveedores,
       usuario: req.session.usuario
