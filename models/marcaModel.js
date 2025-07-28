@@ -1,6 +1,5 @@
 const sql = require('mssql');
-const config = require('../data/config'); // Cambia a '../data/data' si ese es tu archivo
-
+const config = require('../data/data');
 // Obtener todas las marcas
 async function getMarcas() {
   try {

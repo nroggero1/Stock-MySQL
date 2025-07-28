@@ -44,8 +44,13 @@ function agregarProducto() {
   }
 
   const producto = { ...window.productoSeleccionado };
-  producto.Cantidad = cantidad;
   
+  if (!producto.PrecioCompra || isNaN(producto.PrecioCompra)) {
+    alert("El producto no tiene un precio de compra válido.");
+    return;
+  }
+
+  producto.Cantidad = cantidad;
   producto.Total = parseFloat((producto.PrecioCompra * cantidad).toFixed(2));
 
   const existente = productosCompra.find(p => p.Id === producto.Id);
@@ -57,7 +62,6 @@ function agregarProducto() {
   }
 
   actualizarTablaCompra();
-
   cantidadInput.value = "";
   document.getElementById("codigoBarras").value = "";
   document.getElementById("producto").value = "";
@@ -95,8 +99,6 @@ function actualizarTablaCompra() {
   document.getElementById("importe-total").value = totalCompra.toFixed(2);
   document.getElementById("productos-json").value = JSON.stringify(productosCompra);
 }
-
-
 
 function prepararEnvioCompra() {
   if (productosCompra.length === 0) {

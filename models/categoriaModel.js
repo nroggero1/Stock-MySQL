@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const config = require('../data/config'); // Cambia si usas otro nombre
+const config = require('../data/data'); 
 
 // Obtener todas las categorías
 async function getCategorias() {
