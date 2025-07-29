@@ -22,57 +22,32 @@ async function obtenerCompras() {
 }
 
 // Insertar nueva compra y detalle
-async function insertarCompra({ idProveedor, idUsuario, importe, productos }) {
-  const pool = await sql.connect(config);
-  const transaction = new sql.Transaction(pool);
+async function insertarCompra({ idProveedor, idUsuario, productos }) {
+  // Obtener la fecha actual en formato DDMMYYYY
+  const fechaCompra = new Date();
+  const dia = String(fechaCompra.getDate()).padStart(2, '0');
+  const mes = String(fechaCompra.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
+  const anio = fechaCompra.getFullYear();
+  const fechaFormateada = `${dia}${mes}${anio}`;
 
-  try {
-    await transaction.begin();
+  // Imprimir en consola los datos requeridos
+  console.log('Usuario:', idUsuario);
+  console.log('Proveedor:', idProveedor);
+  console.log('Fecha:', fechaFormateada);
 
-    // Insertar compra
-    const result = await new sql.Request(transaction)
-      .input('IdProveedor', sql.Int, idProveedor)
-      .input('IdUsuario', sql.Int, idUsuario)
-      .input('Importe', sql.Decimal(10, 2), parseFloat(importe))
-      .input('Fecha', sql.DateTime, new Date())
-      .query(`
-        INSERT INTO Compra (IdProveedor, IdUsuario, Importe, Fecha)
-        OUTPUT INSERTED.Id
-        VALUES (@IdProveedor, @IdUsuario, @Importe, @Fecha)
-      `);
+  // Calcular el importe total
+  const listaProductos = productos.map(producto => ({
+    IdProducto: producto.idProducto,
+    Cantidad: producto.cantidad,
+    PrecioUnitario: producto.precioUnitario
+  }));
 
-    const idCompra = result.recordset[0].Id;
+  const totalImporte = listaProductos.reduce((total, producto) => {
+    return total + (producto.Cantidad * producto.PrecioUnitario);
+  }, 0);
 
-    for (const producto of productos) {
-      const { Id, Cantidad, PrecioCompra } = producto;
-
-      await new sql.Request(transaction)
-        .input('IdCompra', sql.Int, idCompra)
-        .input('IdProducto', sql.Int, Id)
-        .input('Cantidad', sql.Int, Cantidad)
-        .input('PrecioUnitario', sql.Decimal(10, 2), parseFloat(PrecioCompra))
-        .query(`
-          INSERT INTO DetalleCompra (IdCompra, IdProducto, Cantidad, PrecioUnitario)
-          VALUES (@IdCompra, @IdProducto, @Cantidad, @PrecioUnitario)
-        `);
-
-      // Actualizar stock del producto
-      await new sql.Request(transaction)
-        .input('IdProducto', sql.Int, Id)
-        .input('Cantidad', sql.Int, Cantidad)
-        .query(`
-          UPDATE Producto
-          SET Stock = Stock + @Cantidad
-          WHERE Id = @IdProducto
-        `);
-    }
-
-    await transaction.commit();
-  } catch (error) {
-    console.error('Error al insertar compra:', error.message);
-    await transaction.rollback();
-    throw error;
-  }
+  console.log('Lista de productos:', JSON.stringify(listaProductos, null, 2));
+  console.log('Importe total:', totalImporte.toFixed(2));
 }
 
 module.exports = {
