@@ -30,7 +30,7 @@ exports.formAgregarCompra = async (req, res) => {
 
 exports.agregarCompra = async (req, res) => {
   try {
-    const idUsuario = req.session.usuario?.Id;
+    const idUsuario = req.session.usuario.id;
     if (!idUsuario) return res.status(403).send('No autorizado');
 
     const { idProveedor, productos, importe } = req.body;
