@@ -15,12 +15,12 @@
 
   <hr>
 
-  <!-- Código de barras y búsqueda -->
+  <!-- Búsqueda por código de barras -->
   <div class="form-row">
     <div class="form-group col-md-6">
       <label for="codigoBarras">Código de Barras:</label>
       <div class="input-group">
-        <input type="text" id="codigoBarras" class="form-control" placeholder="Escanee o escriba código" />
+        <input type="text" id="codigoBarras" class="form-control" placeholder="Escanee o escriba código" autocomplete="off" />
         <div class="input-group-append">
           <button type="button" class="btn btn-primary" onclick="buscarProductoPorCodigo()">Buscar</button>
         </div>
@@ -42,8 +42,9 @@
       <label for="categoria">Categoría:</label>
       <input type="text" id="categoria" class="form-control" disabled />
     </div>
+  </div>
 
-  <!-- Cantidad + Botón Agregar -->
+  <!-- Cantidad y botón Agregar -->
   <div class="form-row align-items-end">
     <div class="form-group col-md-4">
       <label for="cantidad">Cantidad:</label>
@@ -60,17 +61,21 @@
   <table id="tabla-compra" class="table table-bordered">
     <thead class="thead-dark">
       <tr>
+        <th>#</th>
         <th>Producto</th>
+        <th>Marca</th>
+        <th>Categoría</th>
         <th>Cantidad</th>
-        <th>Total</th>
+        <th>Precio Unitario</th>
+        <th>Sub Total</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody></tbody>
+    <!-- El tfoot se actualizará dinámicamente en compras.js -->
   </table>
 
-  <p class="font-weight-bold">Total: $<span id="importe-total-visual">0.00</span></p>
-
-  <!-- Campos ocultos para enviar datos -->
+  <!-- Datos ocultos para enviar -->
   <input type="hidden" name="productos" id="productos-json" />
   <input type="hidden" name="importe" id="importe-total" />
 

@@ -122,10 +122,10 @@ exports.buscarPorCodigoBarras = async (req, res) => {
     if (!producto) {
       return res.status(404).json({ mensaje: "Producto no encontrado" });
     }
-    if (!producto.activo) {
+    if (!producto.Activo) {
       return res.status(400).json({ mensaje: "Producto inactivo" });
     }
-    if (!producto.precioCompra || producto.precioCompra <= 0) {
+    if (!producto.PrecioCompra || producto.PrecioCompra <= 0) {
       return res
         .status(400)
         .json({ mensaje: "El producto no tiene un precio de compra válido." });

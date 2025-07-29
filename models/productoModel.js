@@ -110,9 +110,12 @@ async function getProductosBajoStock() {
 async function obtenerProductosActivos() {
   const pool = await sql.connect(config);
   const result = await pool.request().query(`
-    SELECT Id, Nombre, PrecioCompra, Stock
+    SELECT Producto.Id, Producto.Nombre, Producto.PrecioCompra, Producto.Stock,
+           Marca.Nombre AS Marca, Categoria.Nombre AS Categoria
     FROM Producto
-    WHERE Activo = 1
+    JOIN Marca ON Producto.IdMarca = Marca.Id
+    JOIN Categoria ON Producto.IdCategoria = Categoria.Id
+    WHERE Producto.Activo = 1
   `);
   return result.recordset;
 }
@@ -123,7 +126,13 @@ async function obtenerPorCodigoBarras(codigoBarras) {
     const result = await pool
       .request()
       .input('CodigoBarras', sql.NVarChar, codigoBarras)
-      .query('SELECT * FROM Producto WHERE CodigoBarras = @CodigoBarras');
+      .query(`
+        SELECT Producto.*, Marca.Nombre AS Marca, Categoria.Nombre AS Categoria
+        FROM Producto
+        JOIN Marca ON Producto.IdMarca = Marca.Id
+        JOIN Categoria ON Producto.IdCategoria = Categoria.Id
+        WHERE CodigoBarras = @CodigoBarras
+      `);
 
     return result.recordset[0];
   } catch (error) {

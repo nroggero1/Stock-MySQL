@@ -1,116 +1,144 @@
-const productosCompra = [];
+let productosCompra = [];
 
-async function buscarProductoPorCodigo() {
-  const codigo = document.getElementById("codigoBarras").value;
+function buscarProductoPorCodigo() {
+  const codigo = document.getElementById("codigoBarras").value.trim();
+  if (!codigo) return alert("Ingrese un código de barras");
 
-  if (!codigo.trim()) {
-    alert("Ingrese un código de barras.");
-    return;
-  }
+  fetch(`/productos/buscar/${codigo}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Producto no encontrado");
+      return res.json();
+    })
+    .then(producto => { // Aquí ya es el objeto producto, no data.producto
+      //if (!producto || !producto.Id || !producto.PrecioCompra || producto.PrecioCompra <= 0) {
+      //  throw new Error("El producto no tiene un precio de compra válido.");
+      //}
 
-  try {
-    const response = await fetch(`/productos/buscar/${codigo}`);
-    const data = await response.json();
+      document.getElementById("producto").value = producto.Nombre;
+      document.getElementById("marca").value = producto.Marca;
+      document.getElementById("categoria").value = producto.Categoria;
 
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
-
-    document.getElementById("producto").value = data.Nombre || "";
-    document.getElementById("marca").value = data.Marca || "";
-    document.getElementById("categoria").value = data.Categoria || "";
-
-    window.productoSeleccionado = data;
-
-  } catch (err) {
-    console.error("Error:", err);
-    alert("Ocurrió un error al buscar el producto.");
-  }
+      const inputProducto = document.getElementById("producto");
+      inputProducto.dataset.id = producto.Id;
+      inputProducto.dataset.precio = producto.PrecioCompra;
+      inputProducto.dataset.marcaNombre = producto.Marca;
+      inputProducto.dataset.categoriaNombre = producto.Categoria;
+    })
+    .catch(error => {
+      limpiarCamposProducto();
+      alert(error.message);
+    });
 }
 
-function agregarProducto() {
-  const cantidadInput = document.getElementById("cantidad");
-  const cantidad = parseInt(cantidadInput.value);
-
-  if (!window.productoSeleccionado) {
-    alert("Primero debe buscar y seleccionar un producto.");
-    return;
-  }
-
-  if (!cantidad || cantidad < 1) {
-    alert("Ingrese una cantidad válida.");
-    return;
-  }
-
-  const producto = { ...window.productoSeleccionado };
-  
-  if (!producto.PrecioCompra || isNaN(producto.PrecioCompra)) {
-    alert("El producto no tiene un precio de compra válido.");
-    return;
-  }
-
-  producto.Cantidad = cantidad;
-  producto.Total = parseFloat((producto.PrecioCompra * cantidad).toFixed(2));
-
-  const existente = productosCompra.find(p => p.Id === producto.Id);
-  if (existente) {
-    existente.Cantidad += cantidad;
-    existente.Total = parseFloat((existente.PrecioCompra * existente.Cantidad).toFixed(2));
-  } else {
-    productosCompra.push(producto);
-  }
-
-  actualizarTablaCompra();
-  cantidadInput.value = "";
-  document.getElementById("codigoBarras").value = "";
+function limpiarCamposProducto() {
   document.getElementById("producto").value = "";
   document.getElementById("marca").value = "";
   document.getElementById("categoria").value = "";
-  window.productoSeleccionado = null;
+
+  const inputProducto = document.getElementById("producto");
+  delete inputProducto.dataset.id;
+  delete inputProducto.dataset.precio;
+  delete inputProducto.dataset.marcaNombre;
+  delete inputProducto.dataset.categoriaNombre;
+
+  document.getElementById("cantidad").value = "";
 }
 
-function actualizarTablaCompra() {
-  const tablaBody = document.querySelector("#tabla-compra tbody");
-  tablaBody.innerHTML = "";
+function agregarProducto() {
+  const inputProducto = document.getElementById("producto");
 
-  let totalCompra = 0;
+  const idProducto = inputProducto.dataset.id;
+  const nombre = inputProducto.value;
+  const cantidad = parseInt(document.getElementById("cantidad").value);
+  const precio = parseFloat(inputProducto.dataset.precio);
+  const marca = inputProducto.dataset.marcaNombre;
+  const categoria = inputProducto.dataset.categoriaNombre;
 
-  productosCompra.forEach((producto) => {
-    const cantidad = producto.Cantidad || 1;
-    const precio = parseFloat(producto.PrecioCompra);
+  if (!idProducto || isNaN(cantidad) || cantidad <= 0) {
+    return alert("Datos incompletos o inválidos.");
+  }
 
-    if (isNaN(precio)) {
-      console.error(`Precio inválido para producto ${producto.Nombre}:`, producto.PrecioCompra);
-    }
+  if (isNaN(precio) || precio <= 0) {
+    return alert("El producto no tiene un precio válido.");
+  }
 
-    const totalProducto = cantidad * precio;
-    totalCompra += totalProducto;
-
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${producto.Nombre}</td>
-      <td>${cantidad}</td>
-      <td>$${isNaN(totalProducto) ? "0.00" : totalProducto.toFixed(2)}</td>
-    `;
-    tablaBody.appendChild(fila);
+  productosCompra.push({
+    idProducto,
+    nombre,
+    marca,
+    categoria,
+    cantidad,
+    precioUnitario: precio,
+    subTotal: +(cantidad * precio).toFixed(2),
   });
 
-  document.getElementById("importe-total").value = totalCompra.toFixed(2);
+  limpiarCamposProducto();
+  actualizarTabla();
+}
+
+function eliminarProducto(index) {
+  productosCompra.splice(index, 1);
+  actualizarTabla();
+}
+
+function actualizarTabla() {
+  const tbody = document.querySelector("#tabla-compra tbody");
+  const tfootExistente = document.querySelector("#tabla-compra tfoot");
+  if (tfootExistente) tfootExistente.remove();
+
+  tbody.innerHTML = "";
+
+  let totalItems = 0;
+  let totalCantidad = 0;
+  let totalImporte = 0;
+
+  productosCompra.forEach((prod, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${prod.nombre}</td>
+      <td>${prod.marca}</td>
+      <td>${prod.categoria}</td>
+      <td>${prod.cantidad}</td>
+      <td>$${prod.precioUnitario.toFixed(2)}</td>
+      <td>$${prod.subTotal.toFixed(2)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+    `;
+    tbody.appendChild(tr);
+
+    totalItems++;
+    totalCantidad += prod.cantidad;
+    totalImporte += prod.subTotal;
+  });
+
+  const tfoot = document.createElement("tfoot");
+  tfoot.innerHTML = `
+    <tr>
+      <th colspan="4">Cantidad de items</th>
+      <td>${totalItems}</td>
+      <td colspan="3"></td>
+    </tr>
+    <tr>
+      <th colspan="4">Total unidades</th>
+      <td>${totalCantidad}</td>
+      <td colspan="3"></td>
+    </tr>
+    <tr>
+      <th colspan="6">Total a pagar</th>
+      <th colspan="2">$${totalImporte.toFixed(2)}</th>
+    </tr>
+  `;
+  tbody.parentElement.appendChild(tfoot);
+
+  document.getElementById("importe-total-visual").textContent = totalImporte.toFixed(2);
+  document.getElementById("importe-total").value = totalImporte.toFixed(2);
   document.getElementById("productos-json").value = JSON.stringify(productosCompra);
 }
 
 function prepararEnvioCompra() {
   if (productosCompra.length === 0) {
-    alert("Debe agregar al menos un producto a la compra.");
+    alert("Debe agregar al menos un producto");
     return false;
   }
-
-  // Forzar el cálculo final del total e inputs ocultos justo antes del envíos
-  actualizarTablaCompra();
   return true;
 }
-
-window.agregarProducto = agregarProducto;
-window.buscarProductoPorCodigo = buscarProductoPorCodigo;
-window.prepararEnvioCompra = prepararEnvioCompra;

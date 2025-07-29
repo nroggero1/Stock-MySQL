@@ -40,10 +40,10 @@ router.post('/marcas/agregar', verificarAutenticacion, marcaController.agregarMa
 router.get('/marcas/editar/:id', verificarAutenticacion, marcaController.formModificarMarca);
 router.post('/marcas/editar/:id', verificarAutenticacion, marcaController.modificarMarca);
 
-// Rutas de provincia (pueden no requerir autenticación si son llamadas AJAX públicas, opcional)
+// Rutas de provincia
 router.get('/provincias', verificarAutenticacion, provinciaController.listarProvincias);
 
-// Ruta para obtener localidades por provincia (AJAX)
+// Rutas para localidades por provincia (AJAX)
 router.get('/localidades/:idProvincia', verificarAutenticacion, localidadController.listarLocalidadesPorProvincia);
 router.get('/localidades/provincia/:idProvincia', verificarAutenticacion, localidadController.listarLocalidadesPorProvincia);
 
@@ -75,6 +75,8 @@ router.post('/productos/agregar', verificarAutenticacion, productoController.agr
 router.get('/productos/editar/:id', verificarAutenticacion, productoController.mostrarFormularioEditar);
 router.post('/productos/editar/:id', verificarAutenticacion, productoController.modificarProducto);
 router.get('/productos/stock-bajo', verificarAutenticacion, productoController.listarProductosBajoStock);
+
+// Ruta para buscar producto por código de barras con autenticación
 router.get('/productos/buscar/:codigoBarras', verificarAutenticacion, productoController.buscarPorCodigoBarras);
 
 // Rutas de compra
