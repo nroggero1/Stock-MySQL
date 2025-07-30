@@ -21,33 +21,95 @@ async function obtenerCompras() {
   }
 }
 
-// Insertar nueva compra y detalle
+/**
+ * Insertar nueva compra y sus detalles.
+ * @param {Object} params
+ * @param {number} params.idProveedor
+ * @param {number} params.idUsuario
+ * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string}>} params.productos
+ * @returns {Promise<number>} Id de la compra insertada
+ */
 async function insertarCompra({ idProveedor, idUsuario, productos }) {
-  // Obtener la fecha actual en formato DDMMYYYY
-  const fechaCompra = new Date();
-  const dia = String(fechaCompra.getDate()).padStart(2, '0');
-  const mes = String(fechaCompra.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexados
-  const anio = fechaCompra.getFullYear();
-  const fechaFormateada = `${dia}${mes}${anio}`;
+  if (!Array.isArray(productos) || productos.length === 0) {
+    throw new Error('La lista de productos no puede estar vacía.');
+  }
 
-  // Imprimir en consola los datos requeridos
-  console.log('Usuario:', idUsuario);
-  console.log('Proveedor:', idProveedor);
-  console.log('Fecha:', fechaFormateada);
-
-  // Calcular el importe total
-  const listaProductos = productos.map(producto => ({
-    IdProducto: producto.idProducto,
-    Cantidad: producto.cantidad,
-    PrecioUnitario: producto.precioUnitario
+  // Normalizar y calcular total
+  const normalizados = productos.map(p => ({
+    idProducto: Number(p.idProducto),
+    cantidad: Number(p.cantidad),
+    precioUnitario: Number(p.precioUnitario)
   }));
 
-  const totalImporte = listaProductos.reduce((total, producto) => {
-    return total + (producto.Cantidad * producto.PrecioUnitario);
-  }, 0);
+  const totalImporte = normalizados.reduce(
+    (acc, p) => acc + (p.cantidad * p.precioUnitario),
+    0
+  );
 
-  console.log('Lista de productos:', JSON.stringify(listaProductos, null, 2));
-  console.log('Importe total:', totalImporte.toFixed(2));
+  // Logs (opcional)
+  console.log('Insertando compra:');
+  console.log('  Usuario:', idUsuario);
+  console.log('  Proveedor:', idProveedor);
+  console.log('  Total Importe:', totalImporte.toFixed(2));
+  console.log('  Productos:', JSON.stringify(productos, null, 2));
+
+  const pool = await sql.connect(config);
+  const request = pool.request();
+
+  // Parámetros comunes
+  request
+    .input('Fecha', sql.DateTime, new Date())
+    .input('IdUsuario', sql.Int, Number(idUsuario))
+    .input('IdProveedor', sql.Int, Number(idProveedor))
+    .input('Importe', sql.Decimal(10, 2), Number(totalImporte.toFixed(2)));
+
+  // Construir VALUES del detalle con parámetros indexados
+  const values = [];
+  normalizados.forEach((p, i) => {
+    request
+      .input(`IdProducto_${i}`, sql.Int, p.idProducto)
+      .input(`Cantidad_${i}`, sql.Int, p.cantidad)
+      .input(`PrecioUnitario_${i}`, sql.Decimal(10, 2), Number(p.precioUnitario.toFixed(2)));
+
+    values.push(`(@IdCompra, @IdProducto_${i}, @Cantidad_${i}, @PrecioUnitario_${i})`);
+  });
+
+  const detalleValuesClause = values.join(',\n      ');
+
+  // Batch T-SQL con transacción explícita
+  const sqlBatch = `
+BEGIN TRY
+  BEGIN TRAN;
+
+    INSERT INTO Compra (Fecha, IdUsuario, IdProveedor, Importe)
+    VALUES (@Fecha, @IdUsuario, @IdProveedor, @Importe);
+
+    DECLARE @IdCompra INT = SCOPE_IDENTITY();
+
+    INSERT INTO DetalleCompra (IdCompra, IdProducto, Cantidad, PrecioUnitario)
+    VALUES
+      ${detalleValuesClause};
+
+  COMMIT TRAN;
+
+  SELECT @IdCompra AS IdCompra;
+END TRY
+BEGIN CATCH
+  IF (XACT_STATE()) <> 0 ROLLBACK TRAN;
+  DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
+  DECLARE @ErrNum INT = ERROR_NUMBER();
+  RAISERROR(@ErrMsg, 16, 1);
+END CATCH;
+  `;
+
+  try {
+    const result = await request.query(sqlBatch);
+    const idCompra = result.recordset && result.recordset[0] ? result.recordset[0].IdCompra : null;
+    return idCompra;
+  } catch (error) {
+    console.error('Error al insertar compra:', error.message);
+    throw error;
+  }
 }
 
 module.exports = {
