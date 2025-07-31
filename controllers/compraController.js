@@ -89,3 +89,28 @@ exports.buscarProductoPorCodigo = async (req, res) => {
     res.status(500).json({ error: 'Error al buscar el producto.' });
   }
 };
+
+exports.consultarCompra = async (req, res) => {
+  const id = parseInt(req.params.idCompra, 10);
+
+  if (isNaN(id)) {
+    console.error('ID de compra inválido:', req.params.idCompra);
+    return res.status(400).send('ID inválido');
+  }
+
+  try {
+    const compra = await compraModel.consultarCompra(id);
+
+    if (!compra) {
+      return res.status(404).send('Compra no encontrada');
+    }
+
+    res.render('compra/consultarCompra', {
+      compra,
+      usuario: req.session.usuario,
+    });
+  } catch (error) {
+    console.error('Error al consultar compra:', error);
+    res.status(500).send('Error al consultar compra');
+  }
+};

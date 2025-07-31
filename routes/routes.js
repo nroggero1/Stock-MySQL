@@ -83,5 +83,6 @@ router.get('/productos/buscar/:codigoBarras', verificarAutenticacion, productoCo
 router.get('/compras', verificarAutenticacion, compraController.listarCompras);
 router.get('/compras/agregar', verificarAutenticacion, compraController.formAgregarCompra);
 router.post('/compras/agregar', verificarAutenticacion, compraController.agregarCompra);
+router.get('/compras/consultar/:idCompra', verificarAutenticacion, compraController.consultarCompra);
 
 module.exports = router;

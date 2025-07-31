@@ -8,7 +8,34 @@
   <body>
     <%- include('../header') %>
 
-    <h2>Detalle de la compra: </h2>
+    <h2>Detalle de la compra:</h2>
+    <p>Fecha: <%= new Date(compra.Fecha).toLocaleString() %></p>
+    <p>Proveedor: <%= compra.Proveedor %></p>
+    <p>Importe total: $<%= compra.Importe.toFixed(2) %></p>
+
+    <h3>Productos comprados:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% compra.productos.forEach(function(producto) { %>
+        <tr>
+          <td><%= producto.nombre %></td>
+          <td><%= producto.cantidad %></td>
+          <td>$<%= producto.precioUnitario.toFixed(2) %></td>
+          <td>
+            $<%= (producto.cantidad * producto.precioUnitario).toFixed(2) %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
 
     <%- include('../footer') %>
   </body>

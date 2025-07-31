@@ -112,7 +112,53 @@ END CATCH;
   }
 }
 
+async function consultarCompra(idCompra) {
+  try {
+    const pool = await sql.connect(config);
+
+    // Consulta de la cabecera de la compra
+    const resultCompra = await pool.request()
+      .input('idCompra', sql.Int, idCompra)
+      .query(`
+        SELECT c.Id, c.Fecha, c.Importe,
+               p.Denominacion AS Proveedor
+        FROM Compra c
+        JOIN Proveedor p ON c.IdProveedor = p.Id
+        WHERE c.Id = @idCompra
+      `);
+
+    const compra = resultCompra.recordset[0];
+    console.log('No se encontró compra con id:', idCompra);
+
+    if (!compra) return null;
+
+    // Consulta de los productos de la compra
+    const resultDetalle = await pool.request()
+      .input('idCompra', sql.Int, idCompra)
+      .query(`
+        SELECT pr.Nombre AS NombreProducto,
+               dc.Cantidad,
+               dc.PrecioUnitario
+        FROM DetalleCompra dc
+        JOIN Producto pr ON dc.IdProducto = pr.Id
+        WHERE dc.IdCompra = @idCompra
+      `);
+
+    compra.productos = resultDetalle.recordset.map(p => ({
+      nombre: p.NombreProducto,
+      cantidad: p.Cantidad,
+      precioUnitario: p.PrecioUnitario
+    }));
+
+    return compra;
+  } catch (error) {
+    console.error('Error al consultar compra:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   obtenerCompras,
   insertarCompra,
+  consultarCompra
 };
