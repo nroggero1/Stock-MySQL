@@ -1,33 +1,32 @@
-  <%- include('../header') %>
+<%- include('../header') %>
 
-  <h2>Productos con Stock Bajo</h2>
+<h2>Productos con Stock Bajo</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Categoría</th>
-        <th>Marca</th>
-        <th>Stock</th>
-        <th>Stock mínimo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% productos.forEach(p => { %>
-        <tr>         <td><%= p.Id %></td>
-          <td><%= p.Nombre %></td>
-          <td><%= p.Descripcion %></td>
-          <td><%= p.Categoria %></td>
-          <td><%= p.Marca %></td>
-          <td><%= p.Stock %></td>
-          <td><%= p.StockMinimo %></td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Categoría</th>
+      <th>Marca</th>
+      <th>Stock</th>
+      <th>Stock mínimo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% productos.forEach(p => { %>
+    <tr>
+      <td><%= p.Id %></td>
+      <td><%= p.Nombre %></td>
+      <td><%= p.Descripcion %></td>
+      <td><%= p.Categoria %></td>
+      <td><%= p.Marca %></td>
+      <td><%= p.Stock %></td>
+      <td><%= p.StockMinimo %></td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
 
-  <%- include('../footer') %>
-
-
+<%- include('../footer') %>

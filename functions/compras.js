@@ -5,14 +5,15 @@ function buscarProductoPorCodigo() {
   if (!codigo) return alert("Ingrese un código de barras");
 
   fetch(`/productos/buscar/${codigo}`)
-    .then(res => {
+    .then((res) => {
       if (!res.ok) throw new Error("Producto no encontrado");
       return res.json();
     })
-    .then(producto => {
+    .then((producto) => {
       document.getElementById("producto").value = producto.Nombre;
       document.getElementById("marca").value = producto.Marca;
       document.getElementById("categoria").value = producto.Categoria;
+      document.getElementById("stock").value = producto.Stock;
 
       const inputProducto = document.getElementById("producto");
       inputProducto.dataset.id = producto.Id;
@@ -20,7 +21,7 @@ function buscarProductoPorCodigo() {
       inputProducto.dataset.marcaNombre = producto.Marca;
       inputProducto.dataset.categoriaNombre = producto.Categoria;
     })
-    .catch(error => {
+    .catch((error) => {
       limpiarCamposProducto();
       alert(error.message);
     });
@@ -128,7 +129,8 @@ function actualizarTabla() {
 
   // Actualizar campos ocultos
   document.getElementById("importe-total").value = totalImporte.toFixed(2);
-  document.getElementById("productos-json").value = JSON.stringify(productosCompra);
+  document.getElementById("productos-json").value =
+    JSON.stringify(productosCompra);
 }
 
 function prepararEnvioCompra() {

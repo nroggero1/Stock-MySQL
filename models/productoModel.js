@@ -1,7 +1,6 @@
 const sql = require("mssql");
 const config = require("../data/data");
 
-// Obtener todos los productos
 async function getProductos() {
   const pool = await sql.connect(config);
   const result = await pool.request().query(`
@@ -20,7 +19,8 @@ async function getProductos() {
 
 async function getProductoPorId(id) {
   const pool = await sql.connect(config);
-  const result = await pool.request()
+  const result = await pool
+    .request()
     .input("Id", sql.Int, id)
     .query("SELECT * FROM Producto WHERE Id = @Id");
   return result.recordset[0];
@@ -32,7 +32,8 @@ async function insertarProducto(producto) {
   );
 
   const pool = await sql.connect(config);
-  await pool.request()
+  await pool
+    .request()
     .input("Nombre", sql.NVarChar, producto.Nombre)
     .input("Descripcion", sql.NVarChar, producto.Descripcion)
     .input("CodigoBarras", sql.NVarChar, producto.CodigoBarras)
@@ -45,8 +46,7 @@ async function insertarProducto(producto) {
     .input("Stock", sql.Int, producto.Stock)
     .input("StockMinimo", sql.Int, producto.StockMinimo)
     .input("Activo", sql.Bit, producto.Activo)
-    .input("FechaAlta", sql.DateTime, new Date())
-    .query(`
+    .input("FechaAlta", sql.DateTime, new Date()).query(`
       INSERT INTO Producto 
       (Nombre, Descripcion, CodigoBarras, IdCategoria, IdMarca, PrecioCompra, PorcentajeGanancia,
        PrecioVentaSugerido, PrecioVenta, Stock, StockMinimo, Activo, FechaAlta)
@@ -62,7 +62,8 @@ async function actualizarProducto(id, producto) {
   );
 
   const pool = await sql.connect(config);
-  await pool.request()
+  await pool
+    .request()
     .input("Id", sql.Int, id)
     .input("Nombre", sql.NVarChar, producto.Nombre)
     .input("Descripcion", sql.NVarChar, producto.Descripcion)
@@ -75,8 +76,7 @@ async function actualizarProducto(id, producto) {
     .input("PrecioVenta", sql.Decimal(12, 2), producto.PrecioVenta)
     .input("Stock", sql.Int, producto.Stock)
     .input("StockMinimo", sql.Int, producto.StockMinimo)
-    .input("Activo", sql.Bit, producto.Activo)
-    .query(`
+    .input("Activo", sql.Bit, producto.Activo).query(`
       UPDATE Producto SET
         Nombre = @Nombre,
         Descripcion = @Descripcion,
@@ -97,7 +97,7 @@ async function actualizarProducto(id, producto) {
 async function getProductosBajoStock() {
   const pool = await sql.connect(config);
   const result = await pool.request().query(`
-    SELECT Producto.Id, Producto.Nombre, Producto.Stock, Producto.StockMinimo,
+    SELECT Producto.Id, Producto.Nombre, Producto.Descripcion, Producto.Stock, Producto.StockMinimo,
            Marca.Nombre AS Marca, Categoria.Nombre AS Categoria
     FROM Producto
     JOIN Marca ON Producto.IdMarca = Marca.Id
@@ -107,7 +107,7 @@ async function getProductosBajoStock() {
   return result.recordset;
 }
 
-async function obtenerProductosActivos() {
+async function getProductosActivos() {
   const pool = await sql.connect(config);
   const result = await pool.request().query(`
     SELECT Producto.Id, Producto.Nombre, Producto.PrecioCompra, Producto.Stock,
@@ -125,8 +125,7 @@ async function obtenerPorCodigoBarras(codigoBarras) {
     const pool = await sql.connect(config);
     const result = await pool
       .request()
-      .input('CodigoBarras', sql.NVarChar, codigoBarras)
-      .query(`
+      .input("CodigoBarras", sql.NVarChar, codigoBarras).query(`
         SELECT Producto.*, Marca.Nombre AS Marca, Categoria.Nombre AS Categoria
         FROM Producto
         JOIN Marca ON Producto.IdMarca = Marca.Id
@@ -136,7 +135,7 @@ async function obtenerPorCodigoBarras(codigoBarras) {
 
     return result.recordset[0];
   } catch (error) {
-    console.error('Error al buscar producto por código de barras:', error);
+    console.error("Error al buscar producto por código de barras:", error);
     throw error;
   }
 }
@@ -147,6 +146,6 @@ module.exports = {
   insertarProducto,
   actualizarProducto,
   getProductosBajoStock,
-  obtenerProductosActivos,
-  obtenerPorCodigoBarras
+  getProductosActivos,
+  obtenerPorCodigoBarras,
 };

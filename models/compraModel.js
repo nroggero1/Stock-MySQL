@@ -34,7 +34,6 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
     throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  // Normalizar y calcular total
   const normalizados = productos.map(p => ({
     idProducto: Number(p.idProducto),
     cantidad: Number(p.cantidad),
@@ -49,14 +48,12 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
   const pool = await sql.connect(config);
   const request = pool.request();
 
-  // Parámetros comunes
   request
     .input('Fecha', sql.DateTime, new Date())
     .input('IdUsuario', sql.Int, Number(idUsuario))
     .input('IdProveedor', sql.Int, Number(idProveedor))
     .input('Importe', sql.Decimal(10, 2), Number(totalImporte.toFixed(2)));
 
-  // Construir VALUES del detalle con parámetros indexados
   const values = [];
   normalizados.forEach((p, i) => {
     request
@@ -69,7 +66,6 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
 
   const detalleValuesClause = values.join(',\n      ');
 
-  // Batch T-SQL con transacción explícita
   const sqlBatch = `
 BEGIN TRY
   BEGIN TRAN;
@@ -83,6 +79,13 @@ BEGIN TRY
     VALUES
       ${detalleValuesClause};
 
+    -- ACTUALIZAR STOCK (sumar)
+    UPDATE p
+    SET p.Stock = p.Stock + dc.Cantidad
+    FROM Producto p
+    JOIN DetalleCompra dc ON p.Id = dc.IdProducto
+    WHERE dc.IdCompra = @IdCompra;
+
   COMMIT TRAN;
 
   SELECT @IdCompra AS IdCompra;
@@ -90,10 +93,9 @@ END TRY
 BEGIN CATCH
   IF (XACT_STATE()) <> 0 ROLLBACK TRAN;
   DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
-  DECLARE @ErrNum INT = ERROR_NUMBER();
   RAISERROR(@ErrMsg, 16, 1);
 END CATCH;
-  `;
+`;
 
   try {
     const result = await request.query(sqlBatch);

@@ -12,6 +12,7 @@ const proveedorController = require('../controllers/proveedorController');
 const clienteController = require('../controllers/clienteController');
 const productoController = require('../controllers/productoController');
 const compraController = require('../controllers/compraController');
+const ventaController = require('../controllers/ventaController');
 
 // Rutas de login/logout (sin protección)
 router.get('/login', loginController.mostrarLogin);
@@ -84,5 +85,11 @@ router.get('/compras', verificarAutenticacion, compraController.listarCompras);
 router.get('/compras/agregar', verificarAutenticacion, compraController.formAgregarCompra);
 router.post('/compras/agregar', verificarAutenticacion, compraController.agregarCompra);
 router.get('/compras/consultar/:idCompra', verificarAutenticacion, compraController.consultarCompra);
+
+// Rutas de venta
+router.get('/ventas', verificarAutenticacion, ventaController.listarVentas);
+router.get('/ventas/agregar', verificarAutenticacion, ventaController.formAgregarVenta);
+router.post('/ventas/agregar', verificarAutenticacion, ventaController.agregarVenta);
+router.get('/ventas/consultar/:idVenta', verificarAutenticacion, ventaController.consultarVenta);
 
 module.exports = router;

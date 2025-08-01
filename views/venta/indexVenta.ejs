@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ventas</title>
+  </head>
+  <body>
+    <%- include('../header') %>
+
+    <h2>Listado de ventas</h2>
+    <a href="/ventas/agregar">Agregar nueva venta</a>
+    <br />
+    <br />
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Codigo tributario</th>
+          <th>Denominacion</th>
+          <th>Importe</th>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% ventas.forEach(v => { %>
+        <tr>
+          <td><%= v.Id %></td>
+          <td><%= v.CodigoTributario %></td>
+          <td><%= v.Denominacion %></td>
+          <td>$<%= v.Importe.toFixed(2) %></td>
+          <td>
+            <%= v.Fecha ? new Date(v.Fecha).toISOString().slice(0,10).replace(/-/g, '/') : '' %>
+          </td>
+          <td><%= v.Usuario %></td>
+          <td>
+            <a href="/ventas/consultar/<%= v.Id %>">Consultar</a>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <%- include('../footer') %>
+  </body>
+</html>

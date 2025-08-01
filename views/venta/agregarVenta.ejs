@@ -1,0 +1,113 @@
+<%- include('../header') %>
+
+<h2 class="my-4">Agregar Venta</h2>
+
+<form
+  method="POST"
+  action="/ventas/agregar"
+  onsubmit="return prepararEnvioVenta()"
+>
+  <div class="form-group">
+    <label for="idCliente">Cliente:</label>
+    <select id="idCliente" name="idCliente" class="form-control" required>
+      <option value="">Seleccione un cliente</option>
+      <% clientes.forEach(cliente => { %>
+      <option value="<%= cliente.Id %>"><%= cliente.Denominacion %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <hr />
+
+  <!-- Búsqueda por código de barras -->
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="codigoBarras">Código de Barras:</label>
+      <div class="input-group">
+        <input
+          type="text"
+          id="codigoBarras"
+          class="form-control"
+          placeholder="Escanee o escriba código"
+          autocomplete="off"
+        />
+        <div class="input-group-append">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="buscarProductoPorCodigo()"
+          >
+            Buscar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Datos del producto -->
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="producto">Producto:</label>
+      <input type="text" id="producto" class="form-control" disabled />
+    </div>
+    <div class="form-group col-md-4">
+      <label for="marca">Marca:</label>
+      <input type="text" id="marca" class="form-control" disabled />
+    </div>
+    <div class="form-group col-md-4">
+      <label for="categoria">Categoría:</label>
+      <input type="text" id="categoria" class="form-control" disabled />
+    </div>
+  </div>
+  <div class="form-group col-md-2">
+    <label for="stock">Stock:</label>
+    <input type="number" id="stock" class="form-control" disabled />
+  </div>
+
+  <div class="form-row align-items-end">
+    <div class="form-group col-md-4">
+      <label for="cantidad">Cantidad:</label>
+      <input
+        type="number"
+        id="cantidad"
+        class="form-control"
+        placeholder="Cantidad"
+        min="1"
+      />
+    </div>
+    <div class="form-group col-md-2">
+      <button type="button" class="btn btn-success" onclick="agregarProducto()">
+        Agregar
+      </button>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- Tabla de productos -->
+  <table id="tabla-venta" class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>#</th>
+        <th>Producto</th>
+        <th>Marca</th>
+        <th>Categoría</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Sub Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <!-- El tfoot se actualizará dinámicamente en ventas.js -->
+  </table>
+
+  <!-- Datos ocultos para enviar -->
+  <input type="hidden" name="productos" id="productos-json" />
+  <input type="hidden" name="importe" id="importe-total" />
+
+  <button type="submit" class="btn btn-primary">Registrar Venta</button>
+</form>
+
+<script src="/functions/ventas.js"></script>
+<%- include('../footer') %>

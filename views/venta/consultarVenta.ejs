@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalle de venta</title>
+  </head>
+  <body>
+    <%- include('../header') %>
+
+    <h2>Detalle de la venta:</h2>
+    <p>Fecha: <%= new Date(venta.Fecha).toLocaleString() %></p>
+    <p>Proveedor: <%= venta.Proveedor %></p>
+    <p>Importe total: $<%= venta.Importe.toFixed(2) %></p>
+
+    <h3>Productos vendidos:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% venta.productos.forEach(function(producto) { %>
+        <tr>
+          <td><%= producto.nombre %></td>
+          <td><%= producto.cantidad %></td>
+          <td>$<%= producto.precioUnitario.toFixed(2) %></td>
+          <td>
+            $<%= (producto.cantidad * producto.precioUnitario).toFixed(2) %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <%- include('../footer') %>
+  </body>
+</html>

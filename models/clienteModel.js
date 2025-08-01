@@ -81,9 +81,24 @@ async function actualizarCliente(id, cliente) {
   }
 }
 
+// Obtener clientes activos
+async function getClientesActivos() {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool
+      .request()
+      .query(`SELECT Id, Denominacion, CodigoTributario, Activo FROM Cliente WHERE Activo = 1`);
+    return result.recordset;
+  } catch (error) {
+    console.error('Error al obtener clientes activos:', error);
+    throw error;
+  }
+}
+
 module.exports = {
     getClientes,
     getClientePorId,
     insertarCliente,
-    actualizarCliente
+    actualizarCliente,
+    getClientesActivos
 };
