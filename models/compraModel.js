@@ -46,13 +46,6 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
     0
   );
 
-  // Logs (opcional)
-  console.log('Insertando compra:');
-  console.log('  Usuario:', idUsuario);
-  console.log('  Proveedor:', idProveedor);
-  console.log('  Total Importe:', totalImporte.toFixed(2));
-  console.log('  Productos:', JSON.stringify(productos, null, 2));
-
   const pool = await sql.connect(config);
   const request = pool.request();
 
@@ -128,7 +121,6 @@ async function consultarCompra(idCompra) {
       `);
 
     const compra = resultCompra.recordset[0];
-    console.log('No se encontró compra con id:', idCompra);
 
     if (!compra) return null;
 

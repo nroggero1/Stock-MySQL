@@ -48,8 +48,8 @@ async function procesarLogin(req, res) {
       apellido: usuario.Apellido,
       administrador: usuario.Administrador,
     };
-    console.log("Usuario: " + req.session.usuario.id);
     return res.redirect("/");
+    
   } catch (error) {
     console.error("Error al procesar login:", error);
     return res.status(500).render("login", {

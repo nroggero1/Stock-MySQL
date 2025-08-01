@@ -129,9 +129,6 @@ function actualizarTabla() {
   // Actualizar campos ocultos
   document.getElementById("importe-total").value = totalImporte.toFixed(2);
   document.getElementById("productos-json").value = JSON.stringify(productosCompra);
-
-  // Para depuración
-  console.log('Productos a enviar:', productosCompra);
 }
 
 function prepararEnvioCompra() {
