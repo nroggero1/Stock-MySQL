@@ -14,6 +14,10 @@ function buscarProductoPorCodigo() {
       document.getElementById("marca").value = producto.Marca;
       document.getElementById("categoria").value = producto.Categoria;
       document.getElementById("stock").value = producto.Stock;
+      document.getElementById("precioUnitario").value = producto.PrecioCompra.toFixed(2);
+      document.getElementById("porcentajeGanancia").value = producto.PorcentajeGanancia.toFixed(2)
+      document.getElementById("precioVentaSugerido").value = (producto.PrecioCompra + (producto.PrecioCompra * producto.PorcentajeGanancia / 100)).toFixed(2);
+      document.getElementById("precioVenta").value = producto.PrecioVenta.toFixed(2);
 
       const inputProducto = document.getElementById("producto");
       inputProducto.dataset.id = producto.Id;
