@@ -10,23 +10,23 @@
       <h1>Mi Sistema</h1>
       <nav>
         <% if (usuario) { %>
-          <a href="/">Inicio</a>
+        <a href="/">Inicio</a>
 
-          <% if (usuario.administrador) { %>
-            <a href="/categorias">Categorías</a>
-            <a href="/marcas">Marcas</a>
-            <a href="/usuarios">Usuarios</a>
-            <a href="/proveedores">Proveedores</a>
-            <a href="/clientes">Clientes</a>
-            <a href="/compras">Compras</a>
-            <a href="/ventas">Ventas</a>
-          <% } %>
+        <% if (usuario.administrador) { %>
+        <a href="/categorias">Categorías</a>
+        <a href="/marcas">Marcas</a>
+        <a href="/productos">Productos</a>
+        <a href="/proveedores">Proveedores</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/compras">Compras</a>
+        <a href="/usuarios">Usuarios</a>
+        <% } %>
 
-          <a href="/productos">Productos</a>
-          <a href="/productos/stock-bajo">Stock Bajo</a>
-          <a href="/logout">Cerrar sesión (<%= usuario.nombreUsuario %>)</a>
+        <a href="/ventas">Ventas</a>
+        <a href="/productos/stock-bajo">Stock Bajo</a>
+        <a href="/logout">Cerrar sesión (<%= usuario.nombreUsuario %>)</a>
         <% } else { %>
-          <a href="/login">Iniciar sesión</a>
+        <a href="/login">Iniciar sesión</a>
         <% } %>
       </nav>
     </header>

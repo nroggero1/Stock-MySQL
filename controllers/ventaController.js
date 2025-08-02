@@ -4,11 +4,19 @@ const productoModel = require('../models/productoModel');
 
 exports.listarVentas = async (req, res) => {
   try {
-    const ventas = await ventaModel.obtenerVentas();
-    res.render('venta/indexVenta', {
-      ventas,
-      usuario: req.session.usuario
-    });
+    const usuario = req.session.usuario;
+
+    let ventas = [];
+
+    if (usuario && usuario.administrador) {
+      ventas = await ventaModel.obtenerVentas();
+    } else if (usuario && usuario.id) {
+      ventas = await ventaModel.obtenerVentasPorUsuario(usuario.id);
+    } else {
+      return res.status(403).send('Acceso no autorizado.');
+    }
+
+    res.render('venta/indexVenta', { ventas, usuario });
   } catch (error) {
     console.error('Error al listar ventas:', error);
     res.status(500).send('Error al listar ventas.');
@@ -94,24 +102,28 @@ exports.buscarProductoPorCodigo = async (req, res) => {
 };
 
 exports.consultarVenta = async (req, res) => {
-  const id = parseInt(req.params.idVenta, 10);
-
-  if (isNaN(id)) {
-    console.error('ID de venta inválido:', req.params.idVenta);
+  const idVenta = parseInt(req.params.idVenta, 10);
+  if (isNaN(idVenta)) {
     return res.status(400).send('ID inválido');
   }
 
   try {
-    const venta = await ventaModel.consultarVenta(id);
+    const venta = await ventaModel.consultarVenta(idVenta);
 
     if (!venta) {
       return res.status(404).send('Venta no encontrada');
     }
 
-    res.render('venta/consultarVenta', {
-      venta,
-      usuario: req.session.usuario,
-    });
+    const usuario = req.session.usuario;
+
+    if (
+      !usuario ||
+      (!usuario.administrador && venta.IdUsuario !== usuario.id)
+    ) {
+      return res.status(403).send('No autorizado para ver esta venta');
+    }
+
+    res.render('venta/consultarVenta', { venta, usuario });
   } catch (error) {
     console.error('Error al consultar venta:', error);
     res.status(500).send('Error al consultar venta');

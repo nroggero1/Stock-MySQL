@@ -1,14 +1,14 @@
 const sql = require("mssql");
 const config = require("../data/data");
 
-// Obtener todas las ventas
 async function obtenerVentas() {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
       SELECT v.Id, v.Fecha, v.Importe,
              c.CodigoTributario, c.Denominacion,
-             u.NombreUsuario AS Usuario
+             u.NombreUsuario AS Usuario,
+             v.IdUsuario
       FROM Venta v
       JOIN Cliente c ON v.IdCliente = c.Id
       JOIN Usuario u ON v.IdUsuario = u.Id
@@ -21,14 +21,29 @@ async function obtenerVentas() {
   }
 }
 
-/**
- * Insertar nueva venta y sus detalles.
- * @param {Object} params
- * @param {number} params.idCliente
- * @param {number} params.idUsuario
- * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string, bonificacion?: number|string}>} params.productos
- * @returns {Promise<number>} Id de la venta insertada
- */
+async function obtenerVentasPorUsuario(idUsuario) {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('idUsuario', sql.Int, idUsuario)
+      .query(`
+        SELECT v.Id, v.Fecha, v.Importe,
+               c.CodigoTributario, c.Denominacion,
+               u.NombreUsuario AS Usuario,
+               v.IdUsuario
+        FROM Venta v
+        JOIN Cliente c ON v.IdCliente = c.Id
+        JOIN Usuario u ON v.IdUsuario = u.Id
+        WHERE v.IdUsuario = @idUsuario
+        ORDER BY v.Fecha DESC
+      `);
+    return result.recordset;
+  } catch (error) {
+    console.error("Error al obtener ventas por usuario:", error.message);
+    throw error;
+  }
+}
+
 async function insertarVenta({ idUsuario, idCliente, productos }) {
   if (!Array.isArray(productos) || productos.length === 0) {
     throw new Error('La lista de productos no puede estar vacía.');
@@ -103,7 +118,7 @@ END CATCH;
 
   try {
     const result = await request.query(sqlBatch);
-    const idVenta = result.recordset && result.recordset[0] ? result.recordset[0].IdVenta : null;
+    const idVenta = result.recordset?.[0]?.IdVenta ?? null;
     return idVenta;
   } catch (error) {
     console.error("Error al insertar venta:", error.message);
@@ -119,7 +134,8 @@ async function consultarVenta(idVenta) {
       .input("idVenta", sql.Int, idVenta)
       .query(`
         SELECT v.Id, v.Fecha, v.Importe,
-               c.Denominacion AS Cliente
+               c.Denominacion AS Cliente,
+               v.IdUsuario
         FROM Venta v
         JOIN Cliente c ON v.IdCliente = c.Id
         WHERE v.Id = @idVenta
@@ -156,6 +172,7 @@ async function consultarVenta(idVenta) {
 
 module.exports = {
   obtenerVentas,
+  obtenerVentasPorUsuario,
   insertarVenta,
   consultarVenta
 };
