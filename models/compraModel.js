@@ -26,7 +26,7 @@ async function obtenerCompras() {
  * @param {Object} params
  * @param {number} params.idProveedor
  * @param {number} params.idUsuario
- * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string}>} params.productos
+ * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string, porcentajeGanancia:number|string, precioVenta:number|string}>} params.productos
  * @returns {Promise<number>} Id de la compra insertada
  */
 async function insertarCompra({ idProveedor, idUsuario, productos }) {
@@ -37,7 +37,9 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
   const normalizados = productos.map(p => ({
     idProducto: Number(p.idProducto),
     cantidad: Number(p.cantidad),
-    precioUnitario: Number(p.precioUnitario)
+    precioUnitario: Number(p.precioUnitario),
+    porcentajeGanancia: Number(p.porcentajeGanancia),
+    precioVenta: Number(p.precioVenta)
   }));
 
   const totalImporte = normalizados.reduce(
@@ -56,15 +58,29 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
 
   const values = [];
   normalizados.forEach((p, i) => {
+    const precioVentaSugerido = Number((p.precioUnitario * (1 + p.porcentajeGanancia / 100)).toFixed(2));
+
     request
       .input(`IdProducto_${i}`, sql.Int, p.idProducto)
       .input(`Cantidad_${i}`, sql.Int, p.cantidad)
-      .input(`PrecioUnitario_${i}`, sql.Decimal(10, 2), Number(p.precioUnitario.toFixed(2)));
+      .input(`PrecioUnitario_${i}`, sql.Decimal(10, 2), Number(p.precioUnitario.toFixed(2)))
+      .input(`PorcentajeGanancia_${i}`, sql.Decimal(5, 2), p.porcentajeGanancia)
+      .input(`PrecioVenta_${i}`, sql.Decimal(10, 2), p.precioVenta)
+      .input(`PrecioVentaSugerido_${i}`, sql.Decimal(10, 2), precioVentaSugerido);
 
     values.push(`(@IdCompra, @IdProducto_${i}, @Cantidad_${i}, @PrecioUnitario_${i})`);
   });
 
   const detalleValuesClause = values.join(',\n      ');
+
+  const updateProductoStatements = normalizados.map((_, i) => `
+    UPDATE Producto
+    SET PrecioCompra = @PrecioUnitario_${i},
+        PorcentajeGanancia = @PorcentajeGanancia_${i},
+        PrecioVenta = @PrecioVenta_${i},
+        PrecioVentaSugerido = @PrecioVentaSugerido_${i}
+    WHERE Id = @IdProducto_${i};
+  `).join('\n');
 
   const sqlBatch = `
 BEGIN TRY
@@ -85,6 +101,9 @@ BEGIN TRY
     FROM Producto p
     JOIN DetalleCompra dc ON p.Id = dc.IdProducto
     WHERE dc.IdCompra = @IdCompra;
+
+    -- ACTUALIZAR datos del producto si cambiaron
+    ${updateProductoStatements}
 
   COMMIT TRAN;
 

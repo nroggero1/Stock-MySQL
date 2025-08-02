@@ -13,15 +13,18 @@ function buscarProductoPorCodigo() {
       document.getElementById("producto").value = producto.Nombre;
       document.getElementById("marca").value = producto.Marca;
       document.getElementById("categoria").value = producto.Categoria;
+
       document.getElementById("stock").value = producto.Stock;
       document.getElementById("precioUnitario").value = producto.PrecioCompra.toFixed(2);
-      document.getElementById("porcentajeGanancia").value = producto.PorcentajeGanancia.toFixed(2)
-      document.getElementById("precioVentaSugerido").value = (producto.PrecioCompra + (producto.PrecioCompra * producto.PorcentajeGanancia / 100)).toFixed(2);
+      document.getElementById("porcentajeGanancia").value = producto.PorcentajeGanancia.toFixed(2);
       document.getElementById("precioVenta").value = producto.PrecioVenta.toFixed(2);
+      document.getElementById("precioVentaSugerido").value = producto.PrecioVentaSugerido.toFixed(2);
 
       const inputProducto = document.getElementById("producto");
       inputProducto.dataset.id = producto.Id;
-      inputProducto.dataset.precio = producto.PrecioCompra;
+      inputProducto.dataset.precioOriginal = producto.PrecioCompra;
+      inputProducto.dataset.porcentajeGananciaOriginal = producto.PorcentajeGanancia;
+      inputProducto.dataset.precioVentaOriginal = producto.PrecioVenta;
       inputProducto.dataset.marcaNombre = producto.Marca;
       inputProducto.dataset.categoriaNombre = producto.Categoria;
     })
@@ -36,12 +39,18 @@ function limpiarCamposProducto() {
   document.getElementById("marca").value = "";
   document.getElementById("categoria").value = "";
   document.getElementById("cantidad").value = "";
+  document.getElementById("stock").value = "";
+  document.getElementById("precioUnitario").value = "";
+  document.getElementById("porcentajeGanancia").value = "";
+  document.getElementById("precioVentaSugerido").value = "";
+  document.getElementById("precioVenta").value = "";
 
   const inputProducto = document.getElementById("producto");
   delete inputProducto.dataset.id;
   delete inputProducto.dataset.precio;
   delete inputProducto.dataset.marcaNombre;
   delete inputProducto.dataset.categoriaNombre;
+  delete inputProducto.dataset.precioVenta;
 }
 
 function agregarProducto() {
@@ -50,27 +59,36 @@ function agregarProducto() {
   const idProducto = inputProducto.dataset.id;
   const nombre = inputProducto.value;
   const cantidad = parseInt(document.getElementById("cantidad").value);
-  const precio = parseFloat(inputProducto.dataset.precio);
+  const precioUnitario = parseFloat(document.getElementById("precioUnitario").value);
+  const porcentajeGanancia = parseFloat(document.getElementById("porcentajeGanancia").value);
+  const precioVenta = parseFloat(document.getElementById("precioVenta").value);
+  const precioVentaSugerido = parseFloat(document.getElementById("precioVentaSugerido").value);
+
+  const precioOriginal = parseFloat(inputProducto.dataset.precioOriginal);
+  const porcentajeGananciaOriginal = parseFloat(inputProducto.dataset.porcentajeGananciaOriginal);
+  const precioVentaOriginal = parseFloat(inputProducto.dataset.precioVentaOriginal);
+
   const marca = inputProducto.dataset.marcaNombre;
   const categoria = inputProducto.dataset.categoriaNombre;
 
-  if (!idProducto || isNaN(cantidad) || cantidad <= 0) {
+  if (!idProducto || isNaN(cantidad) || cantidad <= 0 || isNaN(precioUnitario)) {
     return alert("Datos incompletos o inválidos.");
   }
 
-  if (isNaN(precio) || precio <= 0) {
-    return alert("El producto no tiene un precio válido.");
-  }
-
-  // Agregar producto a la lista
   productosCompra.push({
     idProducto,
     nombre,
     marca,
     categoria,
     cantidad,
-    precioUnitario: precio,
-    subTotal: +(cantidad * precio).toFixed(2),
+    precioUnitario,
+    porcentajeGanancia,
+    precioVenta,
+    precioVentaSugerido,
+    precioOriginal,
+    porcentajeGananciaOriginal,
+    precioVentaOriginal,
+    subTotal: +(cantidad * precioUnitario).toFixed(2),
   });
 
   limpiarCamposProducto();
@@ -139,8 +157,38 @@ function actualizarTabla() {
 
 function prepararEnvioCompra() {
   if (productosCompra.length === 0) {
-    alert("Debe agregar al menos un producto");
+    alert("Debe agregar al menos un producto.");
     return false;
   }
+
+  // Validar si algún producto fue modificado
+  const modificados = productosCompra.filter(p => {
+    const productoInput = document.createElement("input");
+    productoInput.dataset.precioOriginal = p.precioOriginal;
+    productoInput.dataset.porcentajeGananciaOriginal = p.porcentajeGananciaOriginal;
+    productoInput.dataset.precioVentaOriginal = p.precioVentaOriginal;
+
+    return (
+      parseFloat(p.precioUnitario) !== parseFloat(p.precioOriginal) ||
+      parseFloat(p.porcentajeGanancia) !== parseFloat(p.porcentajeGananciaOriginal) ||
+      parseFloat(p.precioVenta) !== parseFloat(p.precioVentaOriginal)
+    );
+  });
+
+  if (modificados.length > 0) {
+    const confirmacion = confirm(
+      "Precio de compra y/o porcentaje de ganancia y/o precio de venta modificados. ¿Desea continuar?"
+    );
+    if (!confirmacion) return false;
+  }
+
+  // Convertir la lista a JSON y enviarla
+  document.getElementById("productos-json").value = JSON.stringify(productosCompra);
+
+  // Calcular total
+  const total = productosCompra.reduce((sum, p) => sum + p.subTotal, 0);
+  document.getElementById("importe-total").value = total.toFixed(2);
+
   return true;
 }
+
