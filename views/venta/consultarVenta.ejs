@@ -10,7 +10,7 @@
 
     <h2>Detalle de la venta:</h2>
     <p>Fecha: <%= new Date(venta.Fecha).toLocaleString() %></p>
-    <p>Proveedor: <%= venta.Proveedor %></p>
+    <p>Cliente: <%= venta.Cliente %></p>
     <p>Importe total: $<%= venta.Importe.toFixed(2) %></p>
 
     <h3>Productos vendidos:</h3>
@@ -20,6 +20,7 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Precio unitario</th>
+          <th>Bonificación (%)</th>
           <th>Subtotal</th>
         </tr>
       </thead>
@@ -29,9 +30,8 @@
           <td><%= producto.nombre %></td>
           <td><%= producto.cantidad %></td>
           <td>$<%= producto.precioUnitario.toFixed(2) %></td>
-          <td>
-            $<%= (producto.cantidad * producto.precioUnitario).toFixed(2) %>
-          </td>
+          <td><%= producto.bonificacion.toFixed(2) %>%</td>
+          <td>$<%= (producto.cantidad * producto.precioUnitario * (1 - producto.bonificacion / 100)).toFixed(2) %></td>
         </tr>
         <% }); %>
       </tbody>

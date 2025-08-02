@@ -63,7 +63,21 @@
     <label for="stock">Stock:</label>
     <input type="number" id="stock" class="form-control" disabled />
   </div>
-
+  <div class="form-group col-md-4">
+    <label for="precioUnitario">Precio Unitario:</label>
+    <input type="number" id="precioUnitario" class="form-control" disabled />
+  </div>
+  <div class="form-group col-md-4">
+    <label for="bonificacion">Bonificacion:</label>
+    <input
+      type="number"
+      id="bonificacion"
+      class="form-control"
+      min="0"
+      max="100"
+      value="0"
+    />
+  </div>
   <div class="form-row align-items-end">
     <div class="form-group col-md-4">
       <label for="cantidad">Cantidad:</label>
@@ -94,6 +108,7 @@
         <th>Categoría</th>
         <th>Cantidad</th>
         <th>Precio Unitario</th>
+        <th>Bonificación (%)</th>
         <th>Sub Total</th>
         <th>Acciones</th>
       </tr>

@@ -6,14 +6,14 @@ async function obtenerVentas() {
   try {
     const pool = await sql.connect(config);
     const result = await pool.request().query(`
-  SELECT v.Id, v.Fecha, v.Importe, 
-         c.CodigoTributario, c.Denominacion, 
-         u.NombreUsuario AS Usuario
-  FROM Venta v
-  JOIN Cliente c ON v.IdCliente = c.Id
-  JOIN Usuario u ON v.IdUsuario = u.Id
-  ORDER BY v.Fecha DESC
-`);
+      SELECT v.Id, v.Fecha, v.Importe,
+             c.CodigoTributario, c.Denominacion,
+             u.NombreUsuario AS Usuario
+      FROM Venta v
+      JOIN Cliente c ON v.IdCliente = c.Id
+      JOIN Usuario u ON v.IdUsuario = u.Id
+      ORDER BY v.Fecha DESC
+    `);
     return result.recordset;
   } catch (error) {
     console.error("Error al obtener ventas:", error.message);
@@ -26,51 +26,28 @@ async function obtenerVentas() {
  * @param {Object} params
  * @param {number} params.idCliente
  * @param {number} params.idUsuario
- * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string}>} params.productos
+ * @param {Array<{idProducto:number|string, cantidad:number|string, precioUnitario:number|string, bonificacion?: number|string}>} params.productos
  * @returns {Promise<number>} Id de la venta insertada
  */
-async function insertarVenta({ idCliente, idUsuario, productos }) {
+async function insertarVenta({ idUsuario, idCliente, productos }) {
   if (!Array.isArray(productos) || productos.length === 0) {
-    throw new Error("La lista de productos no puede estar vacía.");
+    throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  const normalizados = productos.map((p) => ({
+  const normalizados = productos.map(p => ({
     idProducto: Number(p.idProducto),
     cantidad: Number(p.cantidad),
     precioUnitario: Number(p.precioUnitario),
+    bonificacion: Number(p.bonificacion || 0)
   }));
 
-  const totalImporte = normalizados.reduce(
-    (acc, p) => acc + p.cantidad * p.precioUnitario,
-    0
-  );
+  const totalImporte = normalizados.reduce((acc, p) => {
+    const bonif = (p.precioUnitario * p.bonificacion) / 100;
+    const subTotal = (p.precioUnitario - bonif) * p.cantidad;
+    return acc + subTotal;
+  }, 0);
 
   const pool = await sql.connect(config);
-
-  // 🔍 Validar stock de cada producto
-  for (const p of normalizados) {
-    const result = await pool
-      .request()
-      .input("IdProducto", sql.Int, p.idProducto)
-      .query(
-        "SELECT Stock FROM Producto WHERE Id = @IdProducto AND Activo = 1"
-      );
-
-    if (result.recordset.length === 0) {
-      throw new Error(
-        `Producto con ID ${p.idProducto} no encontrado o inactivo.`
-      );
-    }
-
-    const stockActual = result.recordset[0].Stock;
-
-    if (stockActual < p.cantidad) {
-      throw new Error(
-        `Stock insuficiente para el producto ID ${p.idProducto}. Disponible: ${stockActual}, solicitado: ${p.cantidad}`
-      );
-    }
-  }
-
   const request = pool.request();
 
   request
@@ -84,18 +61,19 @@ async function insertarVenta({ idCliente, idUsuario, productos }) {
     request
       .input(`IdProducto_${i}`, sql.Int, p.idProducto)
       .input(`Cantidad_${i}`, sql.Int, p.cantidad)
-      .input(
-        `PrecioUnitario_${i}`,
-        sql.Decimal(10, 2),
-        Number(p.precioUnitario.toFixed(2))
-      );
+      .input(`PrecioUnitario_${i}`, sql.Decimal(10, 2), Number(p.precioUnitario.toFixed(2)))
+      .input(`Bonificacion_${i}`, sql.Int, p.bonificacion);
 
-    values.push(
-      `(@IdVenta, @IdProducto_${i}, @Cantidad_${i}, @PrecioUnitario_${i})`
-    );
+    values.push(`(@IdVenta, @IdProducto_${i}, @Cantidad_${i}, @PrecioUnitario_${i}, @Bonificacion_${i})`);
   });
 
-  const detalleValuesClause = values.join(",\n      ");
+  const detalleValuesClause = values.join(',\n      ');
+
+  const updateStockStatements = normalizados.map((_, i) => `
+    UPDATE Producto
+    SET Stock = Stock - @Cantidad_${i}
+    WHERE Id = @IdProducto_${i};
+  `).join('\n');
 
   const sqlBatch = `
 BEGIN TRY
@@ -106,16 +84,11 @@ BEGIN TRY
 
     DECLARE @IdVenta INT = SCOPE_IDENTITY();
 
-    INSERT INTO DetalleVenta (IdVenta, IdProducto, Cantidad, PrecioUnitario)
+    INSERT INTO DetalleVenta (IdVenta, IdProducto, Cantidad, PrecioUnitario, Bonificacion)
     VALUES
       ${detalleValuesClause};
 
-    -- RESTAR STOCK
-    UPDATE p
-    SET p.Stock = p.Stock - dv.Cantidad
-    FROM Producto p
-    JOIN DetalleVenta dv ON p.Id = dv.IdProducto
-    WHERE dv.IdVenta = @IdVenta;
+    ${updateStockStatements}
 
   COMMIT TRAN;
 
@@ -130,10 +103,7 @@ END CATCH;
 
   try {
     const result = await request.query(sqlBatch);
-    const idVenta =
-      result.recordset && result.recordset[0]
-        ? result.recordset[0].IdVenta
-        : null;
+    const idVenta = result.recordset && result.recordset[0] ? result.recordset[0].IdVenta : null;
     return idVenta;
   } catch (error) {
     console.error("Error al insertar venta:", error.message);
@@ -145,8 +115,8 @@ async function consultarVenta(idVenta) {
   try {
     const pool = await sql.connect(config);
 
-    // Consulta de la cabecera de la venta
-    const resultVenta = await pool.request().input("idVenta", sql.Int, idVenta)
+    const resultVenta = await pool.request()
+      .input("idVenta", sql.Int, idVenta)
       .query(`
         SELECT v.Id, v.Fecha, v.Importe,
                c.Denominacion AS Cliente
@@ -156,25 +126,25 @@ async function consultarVenta(idVenta) {
       `);
 
     const venta = resultVenta.recordset[0];
-
     if (!venta) return null;
 
-    // Consulta de los productos de la venta
-    const resultDetalle = await pool
-      .request()
-      .input("idVenta", sql.Int, idVenta).query(`
+    const resultDetalle = await pool.request()
+      .input("idVenta", sql.Int, idVenta)
+      .query(`
         SELECT pr.Nombre AS NombreProducto,
                dv.Cantidad,
-               dv.PrecioUnitario
+               dv.PrecioUnitario,
+               dv.Bonificacion
         FROM DetalleVenta dv
         JOIN Producto pr ON dv.IdProducto = pr.Id
         WHERE dv.IdVenta = @idVenta
       `);
 
-    venta.productos = resultDetalle.recordset.map((p) => ({
+    venta.productos = resultDetalle.recordset.map(p => ({
       nombre: p.NombreProducto,
       cantidad: p.Cantidad,
       precioUnitario: p.PrecioUnitario,
+      bonificacion: p.Bonificacion
     }));
 
     return venta;
@@ -187,5 +157,5 @@ async function consultarVenta(idVenta) {
 module.exports = {
   obtenerVentas,
   insertarVenta,
-  consultarVenta,
+  consultarVenta
 };

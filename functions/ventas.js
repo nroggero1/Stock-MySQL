@@ -42,6 +42,8 @@ function buscarProductoPorCodigo() {
       document.getElementById("marca").value = producto.Marca;
       document.getElementById("categoria").value = producto.Categoria;
       document.getElementById("stock").value = producto.Stock;
+      document.getElementById("precioUnitario").value = producto.PrecioVenta.toFixed(2);
+      document.getElementById("bonificacion").value = "0"; 
 
       const input = document.getElementById("producto");
       input.dataset.id = producto.Id;
@@ -59,11 +61,11 @@ function buscarProductoPorCodigo() {
 
 // --- Limpiar campos ---
 function limpiarCamposProducto() {
-  const campos = ["producto", "marca", "categoria", "stock", "cantidad"];
+  const campos = ["producto", "marca", "categoria", "stock", "cantidad", "precioUnitario", "bonificacion"];
   campos.forEach((id) => (document.getElementById(id).value = ""));
 
   const input = document.getElementById("producto");
-  ["id", "precio", "marcaNombre", "categoriaNombre", "stock", "activo"].forEach(
+  ["id", "precio", "marcaNombre", "categoriaNombre", "stock", "activo", "precioUnitario", "bonificacion"].forEach(
     (attr) => delete input.dataset[attr]
   );
 }
@@ -78,6 +80,7 @@ function agregarProducto() {
   const marca = input.dataset.marcaNombre;
   const categoria = input.dataset.categoriaNombre;
   const stock = parseInt(input.dataset.stock);
+  const bonificacion = parseFloat(document.getElementById("bonificacion").value) || 0;
   const activo = input.dataset.activo === "true";
 
   if (!idProducto || isNaN(cantidad) || cantidad <= 0) {
@@ -97,7 +100,8 @@ function agregarProducto() {
     categoria,
     cantidad,
     precioUnitario: precio,
-    subTotal: +(cantidad * precio).toFixed(2),
+    bonificacion,
+    subTotal: (precio * cantidad) * (1 - (bonificacion / 100)),
     stock,
     activo,
   });
@@ -133,6 +137,7 @@ function actualizarTabla() {
       <td>${prod.categoria}</td>
       <td>${prod.cantidad}</td>
       <td>$${prod.precioUnitario.toFixed(2)}</td>
+      <td>${prod.bonificacion.toFixed(2)}%</td>
       <td>$${prod.subTotal.toFixed(2)}</td>
       <td><button class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
     `;
