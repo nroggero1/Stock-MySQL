@@ -49,7 +49,18 @@ async function insertarVenta({ idUsuario, idCliente, productos }) {
     throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  const normalizados = productos.map(p => ({
+  // Agrupar productos por idProducto y bonificacion
+  const agrupados = productos.reduce((acc, p) => {
+    const key = `${p.idProducto}_${p.bonificacion || 0}`;
+    if (!acc[key]) {
+      acc[key] = { ...p, cantidad: Number(p.cantidad) };
+    } else {
+      acc[key].cantidad += Number(p.cantidad);
+    }
+    return acc;
+  }, {});
+
+  const normalizados = Object.values(agrupados).map(p => ({
     idProducto: Number(p.idProducto),
     cantidad: Number(p.cantidad),
     precioUnitario: Number(p.precioUnitario),

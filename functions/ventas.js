@@ -93,22 +93,35 @@ function agregarProducto() {
     );
   }
 
-  productosVenta.push({
-    idProducto,
-    nombre,
-    marca,
-    categoria,
-    cantidad,
-    precioUnitario: precio,
-    bonificacion,
-    subTotal: (precio * cantidad) * (1 - (bonificacion / 100)),
-    stock,
-    activo,
-  });
+  // Buscar si ya existe el mismo producto con la misma bonificación
+  const existente = productosVenta.find(
+    (p) => p.idProducto === idProducto && p.bonificacion === bonificacion
+  );
+
+  if (existente) {
+    // Sumar cantidades
+    existente.cantidad += cantidad;
+    existente.subTotal = (existente.precioUnitario * existente.cantidad) * (1 - existente.bonificacion / 100);
+  } else {
+    // Agregar como nuevo registro
+    productosVenta.push({
+      idProducto,
+      nombre,
+      marca,
+      categoria,
+      cantidad,
+      precioUnitario: precio,
+      bonificacion,
+      subTotal: (precio * cantidad) * (1 - (bonificacion / 100)),
+      stock,
+      activo,
+    });
+  }
 
   limpiarCamposProducto();
   actualizarTabla();
 }
+
 
 // --- Eliminar producto ---
 function eliminarProducto(index) {
