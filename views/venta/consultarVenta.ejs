@@ -1,44 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detalle de venta</title>
+    <title>Detalle de Venta</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/functions/ventas.js" defer></script>
   </head>
   <body>
     <%- include('../header') %>
 
-    <h2>Detalle de la venta:</h2>
-    <p>Numero de venta: <%= venta.Id %></p></p>
-    <p>Fecha: <%= new Date(venta.Fecha).toLocaleString() %></p>
-    <p>Cliente: <%= venta.Cliente %></p>
-    <p>Importe total: $<%= venta.Importe.toFixed(2) %></p>
+    <div id="detalle-venta">
+      <h2>Detalle de la venta</h2>
+      <p><strong>Número de venta:</strong> <span id="venta-id"><%= venta.Id %></span></p>
+      <p><strong>Fecha:</strong> <span><%= new Date(venta.Fecha).toLocaleString() %></span></p>
+      <p><strong>Cliente:</strong> <span><%= venta.Cliente %></span></p>
+      <p><strong>Código tributario:</strong> <span><%= venta.CodigoTributario %></span></p>
+      <p><strong>Vendedor:</strong> <span><%= venta.Usuario %></span></p>
+      <p><strong>Importe total:</strong> <span>$<%= venta.Importe.toFixed(2) %></span></p>
 
-    <h3>Productos vendidos:</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Cantidad</th>
-          <th>Precio unitario</th>
-          <th>Bonificación (%)</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% venta.productos.forEach(function(producto) { %>
-        <tr>
-          <td><%= producto.nombre %></td>
-          <td><%= producto.cantidad %></td>
-          <td>$<%= producto.precioUnitario.toFixed(2) %></td>
-          <td><%= producto.bonificacion.toFixed(2) %>%</td>
-          <td>$<%= (producto.cantidad * producto.precioUnitario * (1 - producto.bonificacion / 100)).toFixed(2) %></td>
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
+      <h3>Productos vendidos:</h3>
+      <table id="tabla-detalle">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Bonificación (%)</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% venta.productos.forEach(producto => { %>
+            <tr>
+              <td><%= producto.nombre %></td>
+              <td><%= producto.cantidad %></td>
+              <td>$<%= producto.precioUnitario.toFixed(2) %></td>
+              <td><%= producto.bonificacion.toFixed(2) %>%</td>
+              <td>$<%= (producto.cantidad * producto.precioUnitario * (1 - producto.bonificacion / 100)).toFixed(2) %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
 
-    
+    <div class="acciones">
+      <button onclick="window.print()">Imprimir</button>
+      <button onclick="exportarVentaPDF()">Exportar a PDF</button>
+    </div>
 
     <%- include('../footer') %>
   </body>

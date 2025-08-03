@@ -200,3 +200,63 @@ function prepararEnvioVenta() {
 
   return true;
 }
+
+// --- Exportar detalle de venta a PDF ---
+function exportarVentaPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const detalle = document.getElementById("detalle-venta");
+  
+  let y = 10;
+
+  const ventaId = document.getElementById("venta-id")?.textContent;
+
+  doc.setFontSize(14);
+  doc.text("Detalle de Venta", 10, y);
+  y += 10;
+
+  detalle.querySelectorAll("p").forEach(p => {
+    const text = p.textContent;
+    doc.setFontSize(10);
+    doc.text(text, 10, y);
+    y += 7;
+  });
+
+  y += 5;
+  doc.setFontSize(12);
+  doc.text("Detalle de productos", 10, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.text("Producto", 10, y);
+  doc.text("Cant.", 50, y);
+  doc.text("P.Unit.", 70, y);
+  doc.text("Bonif.", 100, y);
+  doc.text("Subtotal", 130, y);
+  y += 6;
+
+  const filas = document.querySelectorAll("#tabla-detalle tbody tr");
+
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll("td");
+    const producto = celdas[0].textContent;
+    const cantidad = celdas[1].textContent;
+    const precioUnit = celdas[2].textContent;
+    const bonificacion = celdas[3].textContent;
+    const subtotal = celdas[4].textContent;
+
+    if (y > 280) {
+      doc.addPage();
+      y = 10;
+    }
+
+    doc.text(producto, 10, y);
+    doc.text(cantidad, 50, y);
+    doc.text(precioUnit, 70, y);
+    doc.text(bonificacion, 100, y);
+    doc.text(subtotal, 130, y);
+    y += 6;
+  });
+
+  doc.save(`Venta_${ventaId || 'detalle'}.pdf`);
+}

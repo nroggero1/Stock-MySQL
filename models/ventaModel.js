@@ -146,9 +146,12 @@ async function consultarVenta(idVenta) {
       .query(`
         SELECT v.Id, v.Fecha, v.Importe,
                c.Denominacion AS Cliente,
+               c.CodigoTributario,
+               u.NombreUsuario AS Usuario,
                v.IdUsuario
         FROM Venta v
         JOIN Cliente c ON v.IdCliente = c.Id
+        JOIN Usuario u ON v.IdUsuario = u.Id
         WHERE v.Id = @idVenta
       `);
 
