@@ -1,9 +1,11 @@
+<title>Editar marca</title>
+
 <%- include('../header') %>
 
 <h2>Editar Marca</h2>
 <form method="POST" action="/marcas/editar/<%= marca.Id %>">
   <label>Nombre:</label>
-  <input type="text" name="nombre" value="<%= marca.Nombre %>" required>
+  <input type="text" name="nombre" value="<%= marca.Nombre %>" required maxlength="50">
   <label>Activo:</label>
   <select name="activo">
     <option value="1" <%= marca.Activo ? 'selected' : '' %>>Sí</option>
@@ -14,5 +16,6 @@
   <br>
     <button type="submit">Actualizar</button>
 </form>
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>

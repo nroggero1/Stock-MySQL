@@ -1,16 +1,18 @@
+<title>Editar cliente</title>
+
 <%- include('../header') %>
 
-<h2>Modificar Cliente</h2>
+<h2>Editar cliente</h2>
 
 <form method="POST" action="/clientes/editar/<%= cliente.Id %>">
     <label>Código tributario:</label>
-    <input type="text" name="codigoTributario" value="<%= cliente.CodigoTributario %>" required><br>
+    <input type="text" name="codigoTributario" value="<%= cliente.CodigoTributario %>" required maxlength="11"><br>
 
     <label>Denominación:</label>
-    <input type="text" name="denominacion" value="<%= cliente.Denominacion %>" required><br>
+    <input type="text" name="denominacion" value="<%= cliente.Denominacion %>" required maxlength="100"><br>
 
     <label>Dirección:</label>
-    <input type="text" name="direccion" value="<%= cliente.Direccion %>" required><br>
+    <input type="text" name="direccion" value="<%= cliente.Direccion %>" required maxlength="50"><br>
 
     <label>Provincia:</label>
     <select id="provinciaSelect" name="provincia" required>
@@ -26,10 +28,10 @@
     </select><br>
 
     <label>Teléfono:</label>
-    <input type="text" name="telefono" value="<%= cliente.Telefono %>" required><br>
+    <input type="text" name="telefono" value="<%= cliente.Telefono %>" required maxlength="20"><br>
 
     <label>Email:</label>
-    <input type="email" name="mail" value="<%= cliente.Mail %>" required><br>
+    <input type="email" name="mail" value="<%= cliente.Mail %>" required maxlength="50"><br>
 
     <label>Activo:</label>
     <select name="activo">
@@ -41,5 +43,6 @@
 </form>
 
 <script src="/functions/filtrosProvinciasYCiudades.js"></script>
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>

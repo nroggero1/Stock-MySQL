@@ -1,26 +1,28 @@
+<title>Agregar usuario</title>
+
 <%- include('../header') %>
 
 <h2>Agregar Usuario</h2>
 <form method="POST" action="/usuarios/agregar">
-  <br>
+  <br />
   <label>Nombre de usuario:</label>
-  <input type="text" name="nombreUsuario" required>
-    <br>
+  <input type="text" name="nombreUsuario" required maxlength="50" />
+  <br />
   <label>Clave:</label>
-  <input type="text" name="clave" required>
-    <br>
+  <input type="text" name="clave" required maxlength="50" />
+  <br />
   <label>Nombre:</label>
-  <input type="text" name="nombre" required>
-    <br>
+  <input type="text" name="nombre" required maxlength="50" />
+  <br />
   <label>Apellido:</label>
-  <input type="text" name="apellido" required>
-    <br>
+  <input type="text" name="apellido" required maxlength="50" />
+  <br />
   <label>Email:</label>
-  <input type="email" name="mail" required>
-    <br>
+  <input type="email" name="mail" required maxlength="50" />
+  <br />
   <label>Fecha de nacimiento:</label>
-  <input type="date" name="fechaNacimiento" required>
-    <br>
+  <input type="date" name="fechaNacimiento" required />
+  <br />
   <button type="submit">Guardar</button>
 </form>
 

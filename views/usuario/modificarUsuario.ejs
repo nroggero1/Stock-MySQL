@@ -1,21 +1,23 @@
+<title>Editar usuario</title>
+
 <%- include('../header') %>
 
-<h2>Editar Usuario</h2>
+<h2>Editar usuario</h2>
 <form method="POST" action="/usuarios/editar/<%= usuarioMod.Id %>">
   <label>Nombre de usuario:</label>
-  <input type="text" name="nombreUsuario" value="<%= usuarioMod.NombreUsuario %>" required>
+  <input type="text" name="nombreUsuario" value="<%= usuarioMod.NombreUsuario %>" required maxlength="50">
   <br>
 
   <label>Clave:</label>
-  <input type="text" name="clave" value="<%= usuarioMod.Clave %>" required>
+  <input type="text" name="clave" value="<%= usuarioMod.Clave %>" required maxlength="50">
   <br>
 
   <label>Nombre:</label>
-  <input type="text" name="nombre" value="<%= usuarioMod.Nombre %>" required>
+  <input type="text" name="nombre" value="<%= usuarioMod.Nombre %>" required maxlength="50">
   <br>
 
   <label>Apellido:</label>
-  <input type="text" name="apellido" value="<%= usuarioMod.Apellido %>" required>
+  <input type="text" name="apellido" value="<%= usuarioMod.Apellido %>" required >
   <br>
 
   <label>Email:</label>
@@ -42,5 +44,6 @@
 
   <button type="submit">Actualizar</button>
 </form>
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>

@@ -1,23 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
     <title>Detalle de Venta</title>
-    <link rel="stylesheet" href="/styles.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="/functions/ventas.js" defer></script>
-  </head>
+    
   <body>
     <%- include('../header') %>
 
     <div id="detalle-venta">
       <h2>Detalle de la venta</h2>
-      <p><strong>Número de venta:</strong> <span id="venta-id"><%= venta.Id %></span></p>
-      <p><strong>Fecha:</strong> <span><%= new Date(venta.Fecha).toLocaleString() %></span></p>
+      <p>
+        <strong>Número de venta:</strong>
+        <span id="venta-id"><%= venta.Id %></span>
+      </p>
+      <p>
+        <strong>Fecha:</strong>
+        <span><%= new Date(venta.Fecha).toLocaleString() %></span>
+      </p>
       <p><strong>Cliente:</strong> <span><%= venta.Cliente %></span></p>
-      <p><strong>Código tributario:</strong> <span><%= venta.CodigoTributario %></span></p>
+      <p>
+        <strong>Código tributario:</strong>
+        <span><%= venta.CodigoTributario %></span>
+      </p>
       <p><strong>Vendedor:</strong> <span><%= venta.Usuario %></span></p>
-      <p><strong>Importe total:</strong> <span>$<%= venta.Importe.toFixed(2) %></span></p>
+      <p>
+        <strong>Importe total:</strong>
+        <span>$<%= venta.Importe.toFixed(2) %></span>
+      </p>
 
       <h3>Productos vendidos:</h3>
       <table id="tabla-detalle">
@@ -32,13 +37,16 @@
         </thead>
         <tbody>
           <% venta.productos.forEach(producto => { %>
-            <tr>
-              <td><%= producto.nombre %></td>
-              <td><%= producto.cantidad %></td>
-              <td>$<%= producto.precioUnitario.toFixed(2) %></td>
-              <td><%= producto.bonificacion.toFixed(2) %>%</td>
-              <td>$<%= (producto.cantidad * producto.precioUnitario * (1 - producto.bonificacion / 100)).toFixed(2) %></td>
-            </tr>
+          <tr>
+            <td><%= producto.nombre %></td>
+            <td><%= producto.cantidad %></td>
+            <td>$<%= producto.precioUnitario.toFixed(2) %></td>
+            <td><%= producto.bonificacion.toFixed(2) %>%</td>
+            <td>
+              $<%= (producto.cantidad * producto.precioUnitario * (1 -
+              producto.bonificacion / 100)).toFixed(2) %>
+            </td>
+          </tr>
           <% }); %>
         </tbody>
       </table>
@@ -48,6 +56,9 @@
       <button onclick="window.print()">Imprimir</button>
       <button onclick="exportarVentaPDF()">Exportar a PDF</button>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/functions/ventas.js" defer></script>
 
     <%- include('../footer') %>
   </body>

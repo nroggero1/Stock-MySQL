@@ -1,45 +1,48 @@
-<%- include('../header') %> 
+<title>Agregar proveedor</title>
+
+<%- include('../header') %>
 
 <h2>Agregar Proveedor</h2>
 
 <form method="POST" action="/proveedores/agregar">
-    <label>Código tributario:</label>
-    <input type="text" name="codigoTributario" required><br>
+  <label>Código tributario:</label>
+  <input type="number" name="codigoTributario" required maxlength="11" /><br />
 
-    <label>Denominación:</label>
-    <input type="text" name="denominacion" required><br>
+  <label>Denominación:</label>
+  <input type="text" name="denominacion" required maxlength="100" /><br />
 
-    <label>Dirección:</label>
-    <input type="text" name="direccion" required><br>
+  <label>Dirección:</label>
+  <input type="text" name="direccion" required maxlength="50" /><br />
 
-    <label>Provincia:</label>
-    <select id="provinciaSelect" name="provincia" required>
-        <option value="">Seleccione una provincia</option>
-        <% provincias.forEach(p => { %>
-            <option value="<%= p.Id %>"><%= p.Nombre %></option>
-        <% }) %>
-    </select><br>
+  <label>Provincia:</label>
+  <select id="provinciaSelect" name="provincia" required>
+    <option value="">Seleccione una provincia</option>
+    <% provincias.forEach(p => { %>
+    <option value="<%= p.Id %>"><%= p.Nombre %></option>
+    <% }) %></select
+  ><br />
 
-    <label>Localidad:</label>
-    <select id="localidadSelect" name="localidad" required>
-        <option value="">Seleccione una localidad</option>
-    </select><br>
+  <label>Localidad:</label>
+  <select id="localidadSelect" name="localidad" required>
+    <option value="">Seleccione una localidad</option></select
+  ><br />
 
-    <label>Teléfono:</label>
-    <input type="text" name="telefono" required><br>
+  <label>Teléfono:</label>
+  <input type="number" name="telefono" required maxlength="20" /><br />
 
-    <label>Email:</label>
-    <input type="email" name="mail" required><br>
+  <label>Email:</label>
+  <input type="email" name="mail" required maxlength="50" /><br />
 
-    <label>Activo:</label>
-    <select name="activo">
-        <option value="1">Sí</option>
-        <option value="0">No</option>
-    </select><br><br>
+  <label>Activo:</label>
+  <select name="activo" disabled>
+    <option value="1">Sí</option>
+    <option value="0">No</option></select
+  ><br /><br />
 
-    <button type="submit">Guardar</button>
+  <button type="submit">Guardar</button>
 </form>
 
 <script src="/functions/filtrosProvinciasYCiudades.js"></script>
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>

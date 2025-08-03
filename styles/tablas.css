@@ -1,0 +1,26 @@
+
+.tabla-estilizada {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  margin-top: 1em;
+}
+
+.tabla-estilizada th, .tabla-estilizada td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.tabla-estilizada th {
+  background-color: #f0f0f0;
+}
+
+.tabla-estilizada input {
+  width: 90%;
+  padding: 4px;
+  font-size: 13px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}

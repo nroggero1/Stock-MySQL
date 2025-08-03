@@ -1,16 +1,18 @@
+<title>Editar producto</title>
+
 <%- include('../header') %> 
 
-<h2>Modificar Producto</h2>
+<h2>Editar producto</h2>
 
 <form method="POST" action="/productos/editar/<%= producto.Id %>">
     <label>Nombre:</label><br>
-    <input type="text" name="nombre" value="<%= producto.Nombre %>" required><br><br>
+    <input type="text" name="nombre" value="<%= producto.Nombre %>" required maxlength="50"><br><br>
 
     <label>Descripción:</label><br>
-    <input type="text" name="descripcion" value="<%= producto.Descripcion %>" required><br><br>
+    <input type="text" name="descripcion" value="<%= producto.Descripcion %>" required maxlength="50"><br><br>
 
     <label>Código de barras:</label><br>
-    <input type="text" name="codigoBarras" value="<%= producto.CodigoBarras %>" required pattern="\d+" title="Solo números"><br><br>
+    <input type="text" name="codigoBarras" value="<%= producto.CodigoBarras %>" required pattern="\d+" title="Solo números" maxlength="30"><br><br>
 
     <label>Marca:</label><br>
     <select id="marcaSelect" name="marca" required>
@@ -29,7 +31,7 @@
     </select><br><br>
 
     <label>Precio de compra:</label><br>
-    <input type="number" name="precioCompra" value="<%= producto.PrecioCompra %>" step="0.01" min="0" required><br><br>
+    <input type="number" name="precioCompra" value="<%= producto.PrecioCompra %>" step="0.01" min="0" required disabled><br><br>
 
     <label>Porcentaje de ganancia (%):</label><br>
     <input type="number" name="porcentajeGanancia" value="<%= producto.PorcentajeGanancia %>" step="1" min="0" max="100" required><br><br>
@@ -41,7 +43,7 @@
     <input type="number" name="precioVenta" value="<%= producto.PrecioVenta %>" step="0.01" min="0" required><br><br>
 
     <label>Stock:</label><br>
-    <input type="number" name="stock" value="<%= producto.Stock %>" min="0" required><br><br>
+    <input type="number" name="stock" value="<%= producto.Stock %>" min="0" required disabled><br><br>
 
     <label>Stock mínimo:</label><br>
     <input type="number" name="stockMinimo" value="<%= producto.StockMinimo %>" min="0" required><br><br>
@@ -56,5 +58,6 @@
 </form>
 
 <script src="/functions/calculosPreciosSugeridos.js"></script>
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>

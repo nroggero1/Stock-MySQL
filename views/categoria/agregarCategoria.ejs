@@ -1,14 +1,17 @@
+<title>Agregar categoria</title>
+
 <%- include('../header') %>
 
 <h2>Agregar Categoría</h2>
 
 <form method="POST" action="/categorias/agregar">
-
   <label>Nombre:</label>
-  <input type="text" name="nombre" required>
-  <br>  
-  <br>
+  <input type="text" name="nombre" required maxlength="50" /><br />
+  <br />
+  <br />
   <button type="submit">Guardar</button>
 </form>
+
+<script src="/functions/general.js"></script>
 
 <%- include('../footer') %>
