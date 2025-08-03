@@ -1,8 +1,11 @@
 .filtro-tabla {
-  width: 95%;
-  padding: 4px;
-  margin-top: 4px;
+  width: 100%;
   font-size: 13px;
+  padding: 4px;
   box-sizing: border-box;
-  border: 1px solid #ccc;
+  margin-top: 2px;
+}
+
+th {
+  white-space: nowrap;
 }
