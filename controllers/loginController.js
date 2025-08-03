@@ -1,4 +1,3 @@
-// controllers/loginController.js
 const loginModel = require("../models/loginModel");
 
 async function mostrarLogin(req, res) {
@@ -40,16 +39,17 @@ async function procesarLogin(req, res) {
       });
     }
 
-    // Autenticación exitosa
+    // Guardar los datos relevantes del usuario en sesión
     req.session.usuario = {
       id: usuario.Id,
       nombreUsuario: usuario.NombreUsuario,
       nombre: usuario.Nombre,
       apellido: usuario.Apellido,
-      administrador: usuario.Administrador,
+      administrador: usuario.Administrador === true || usuario.Administrador === 1
     };
+
     return res.redirect("/");
-    
+
   } catch (error) {
     console.error("Error al procesar login:", error);
     return res.status(500).render("login", {
@@ -65,13 +65,13 @@ function logout(req, res) {
     req.session.destroy((err) => {
       if (err) {
         console.error("Error al cerrar sesión:", err);
-        return res.status(500).send("Error al cerrar sesión");
+        return res.status(500).send("Error al cerrar sesión.");
       }
       res.redirect("/login");
     });
   } catch (error) {
     console.error("Error en logout:", error);
-    res.status(500).send("Error al cerrar sesión");
+    res.status(500).send("Error al cerrar sesión.");
   }
 }
 
