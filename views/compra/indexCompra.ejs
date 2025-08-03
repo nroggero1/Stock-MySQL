@@ -7,7 +7,7 @@
     <a href="/compras/agregar">Agregar nueva compra</a>
     <br />
     <br />
-    <table>
+    <table class="filtrable">
       <thead>
         <tr>
           <th>ID</th>
@@ -37,6 +37,8 @@
         <% }) %>
       </tbody>
     </table>
+
+    <script src="/functions/filtrosTablas.js"></script>
 
     <%- include('../footer') %>
   </body>
