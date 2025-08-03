@@ -9,6 +9,7 @@
     <%- include('../header') %>
 
     <h2>Detalle de la venta:</h2>
+    <p>Numero de venta: <%= venta.Id %></p></p>
     <p>Fecha: <%= new Date(venta.Fecha).toLocaleString() %></p>
     <p>Cliente: <%= venta.Cliente %></p>
     <p>Importe total: $<%= venta.Importe.toFixed(2) %></p>

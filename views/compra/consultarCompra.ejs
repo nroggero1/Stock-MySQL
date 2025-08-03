@@ -9,6 +9,7 @@
     <%- include('../header') %>
 
     <h2>Detalle de la compra:</h2>
+    <p>Numero de compra: <%= compra.Id %></p>
     <p>Fecha: <%= new Date(compra.Fecha).toLocaleString() %></p>
     <p>Proveedor: <%= compra.Proveedor %></p>
     <p>Importe total: $<%= compra.Importe.toFixed(2) %></p>
