@@ -23,23 +23,24 @@
     </tr>
   </thead>
   <tbody>
-    <% usuarios.forEach(c => { %>
+    <% usuarios.forEach(u => { %>
       <tr>
-        <td><%= c.Id %></td>
-        <td><%= c.NombreUsuario %></td>
-        <td><%= c.Nombre %></td>
-        <td><%= c.Apellido %></td>
-        <td><%= c.Mail %></td>
+        <td><%= u.Id %></td>
+        <td><%= u.NombreUsuario %></td>
+        <td><%= u.Nombre %></td>
+        <td><%= u.Apellido %></td>
+        <td><%= u.Mail %></td>
         <td>
-          <%= c.FechaNacimiento ? new Date(c.FechaNacimiento).toISOString().slice(0,10).replace(/-/g, '/') : '' %>
+          <%= u.FechaNacimiento ? new Date(u.FechaNacimiento).toISOString().slice(0,10).replace(/-/g, '/') : '' %>
         </td>
-        <td><%= c.Administrador ? 'Sí' : 'No' %></td>
-        <td><%= c.Activo ? 'Sí' : 'No' %></td>
+        <td><%= u.Administrador ? 'Sí' : 'No' %></td>
+        <td><%= u.Activo ? 'Sí' : 'No' %></td>
         <td>
-          <%= new Date(c.FechaAlta).toISOString().slice(0,10).replace(/-/g, '/') %>
+          <%= new Date(u.FechaAlta).toISOString().slice(0,10).replace(/-/g, '/') %>
         </td>
+        
         <td>
-          <a href="/usuarios/editar/<%= c.Id %>">Editar</a>
+          <a href="/usuarios/editar/<%= u.Id %>">Editar</a>
         </td>
       </tr>
     <% }) %>
