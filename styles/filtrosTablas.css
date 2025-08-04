@@ -1,3 +1,28 @@
+/* Aplica bordes y centra contenido */
+table.filtrable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #999;
+  font-family: Arial, sans-serif;
+}
+
+/* Celdas del encabezado y del cuerpo */
+table.filtrable th,
+table.filtrable td {
+  border: 1px solid #999;
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Encabezado */
+table.filtrable thead th {
+  background-color: #f0f0f0;
+  white-space: nowrap;
+}
+
+/* Filtros */
 .filtro-tabla {
   width: 100%;
   font-size: 13px;
@@ -6,6 +31,4 @@
   margin-top: 2px;
 }
 
-th {
-  white-space: nowrap;
-}
+

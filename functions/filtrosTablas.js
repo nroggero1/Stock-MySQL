@@ -10,13 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     encabezados.forEach((th, index) => {
       const celdaFiltro = document.createElement("th");
-      const nombreColumna = th.textContent.trim().toLowerCase();
-
-      const esBooleano = nombreColumna === "activo" || nombreColumna === "administrador";
-      const esFecha = nombreColumna.includes("fecha");
-      const esID = nombreColumna.includes("id");
-      const esPrecio = nombreColumna.includes("precio");
-      const esStock = nombreColumna.includes("stock");
+      const nombreColumna = th.textContent.trim();
+      const nombreColumnaLower = nombreColumna.toLowerCase();
+      const esID = nombreColumna === "ID";
+      const esBooleano =
+        nombreColumnaLower === "activo" ||
+        nombreColumnaLower === "administrador";
+      const esFecha = nombreColumnaLower.includes("fecha");
+      const esPrecio = nombreColumnaLower.includes("precio");
+      const esStock = nombreColumnaLower.includes("stock");
 
       // Excluir columnas específicas
       if (esID || esPrecio || esStock) {
@@ -44,7 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         celdaFiltro.appendChild(select);
-
       } else if (esFecha) {
         const div = document.createElement("div");
         div.style.display = "flex";
@@ -73,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
         div.appendChild(inputDesde);
         div.appendChild(inputHasta);
         celdaFiltro.appendChild(div);
-
       } else {
         const valoresUnicos = new Set();
         cuerpo.querySelectorAll("tr").forEach((fila) => {
