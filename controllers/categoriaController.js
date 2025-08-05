@@ -55,13 +55,3 @@ exports.modificarCategoria = async (req, res) => {
     }
 };
 
-// Eliminar una categoría
-exports.eliminarCategoria = async (req, res) => {
-    try {
-        const id = req.params.id;
-        await categoriaModel.eliminarCategoria(id);
-        res.redirect('/categorias');
-    } catch (err) {
-        res.status(500).send('Error al eliminar categoría');
-    }
-};

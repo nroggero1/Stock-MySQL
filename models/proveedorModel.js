@@ -1,51 +1,63 @@
-const sql = require('mssql');
-const config = require('../data/data'); 
+const pool = require('../data/data'); 
 
-// Obtener todos los proveedores
+// Obtener todos los proveedores con datos de provincia y localidad
 async function getProveedores() {
-    try {
-        let pool = await sql.connect(config);
-        let result = await pool.request().query('select Proveedor.Id AS Id, Proveedor.CodigoTributario AS CodigoTributario, Proveedor.Direccion AS Direccion, Localidad.Nombre AS Localidad, Provincia.Nombre AS Provincia, Proveedor.Telefono AS Telefono,  Proveedor.Mail AS Mail,  Proveedor.Denominacion AS Denominacion,  Proveedor.FechaAlta AS FechaAlta,  Proveedor.Activo AS Activo from Proveedor, Provincia, Localidad where Provincia.Id = Localidad.IdProvincia AND Proveedor.IdProvincia = Provincia.Id AND Proveedor.IdLocalidad = Localidad.Id');
-        return result.recordset;
-    } catch (err) {
-        throw err;
-    }
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        Proveedor.Id,
+        Proveedor.CodigoTributario,
+        Proveedor.Direccion,
+        Localidad.Nombre AS Localidad,
+        Provincia.Nombre AS Provincia,
+        Proveedor.Telefono,
+        Proveedor.Mail,
+        Proveedor.Denominacion,
+        Proveedor.FechaAlta,
+        Proveedor.Activo
+      FROM Proveedor
+      JOIN Localidad ON Proveedor.IdLocalidad = Localidad.Id
+      JOIN Provincia ON Proveedor.IdProvincia = Provincia.Id
+    `);
+    return rows;
+  } catch (err) {
+    console.error('Error al obtener proveedores:', err);
+    throw err;
+  }
 }
 
 // Obtener proveedor por ID
 async function getProveedorPorId(id) {
-    try {
-        let pool = await sql.connect(config);
-        let result = await pool.request()
-            .input('Id', sql.Int, id)
-            .query('SELECT * FROM Proveedor WHERE Id = @Id');
-        return result.recordset[0];
-    } catch (err) {
-        throw err;
-    }
+  try {
+    const [rows] = await pool.query('SELECT * FROM Proveedor WHERE Id = ?', [id]);
+    return rows[0];
+  } catch (err) {
+    console.error('Error al obtener proveedor por ID:', err);
+    throw err;
+  }
 }
 
 // Insertar nuevo proveedor
 async function insertarProveedor(proveedor) {
   try {
-    let pool = await sql.connect(config);
-    await pool.request()
-      .input('CodigoTributario', sql.BigInt, proveedor.CodigoTributario)
-      .input('Direccion', sql.NVarChar, proveedor.Direccion)
-      .input('IdLocalidad', sql.Int, proveedor.IdLocalidad)
-      .input('IdProvincia', sql.Int, proveedor.IdProvincia)
-      .input('Telefono', sql.NVarChar, proveedor.Telefono)
-      .input('Mail', sql.NVarChar, proveedor.Mail)
-      .input('Denominacion', sql.NVarChar, proveedor.Denominacion)
-      .input('FechaAlta', sql.DateTime, new Date())
-      .input('Activo', sql.Bit, proveedor.Activo)
-      .query(`
-        INSERT INTO Proveedor 
+    const sql = `
+      INSERT INTO Proveedor 
         (CodigoTributario, Direccion, IdLocalidad, IdProvincia, Telefono, Mail, Denominacion, FechaAlta, Activo)
-        VALUES 
-        (@CodigoTributario, @Direccion, @IdLocalidad, @IdProvincia, @Telefono, @Mail, @Denominacion, @FechaAlta, @Activo)
-      `);
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+    `;
+    const params = [
+      proveedor.CodigoTributario,
+      proveedor.Direccion,
+      proveedor.IdLocalidad,
+      proveedor.IdProvincia,
+      proveedor.Telefono,
+      proveedor.Mail,
+      proveedor.Denominacion,
+      proveedor.Activo
+    ];
+    await pool.query(sql, params);
   } catch (err) {
+    console.error('Error al insertar proveedor:', err);
     throw err;
   }
 }
@@ -53,55 +65,55 @@ async function insertarProveedor(proveedor) {
 // Actualizar proveedor existente
 async function actualizarProveedor(id, proveedor) {
   try {
-    let pool = await sql.connect(config);
-    await pool.request()
-      .input('Id', sql.Int, id)
-      .input('CodigoTributario', sql.BigInt, proveedor.CodigoTributario)
-      .input('Direccion', sql.NVarChar, proveedor.Direccion)
-      .input('IdLocalidad', sql.Int, proveedor.IdLocalidad)
-      .input('IdProvincia', sql.Int, proveedor.IdProvincia)
-      .input('Telefono', sql.NVarChar, proveedor.Telefono)
-      .input('Mail', sql.NVarChar, proveedor.Mail)
-      .input('Denominacion', sql.NVarChar, proveedor.Denominacion)
-      .input('Activo', sql.Bit, proveedor.Activo)
-      .query(`
-        UPDATE Proveedor SET
-          CodigoTributario = @CodigoTributario,
-          Direccion = @Direccion,
-          IdLocalidad = @IdLocalidad,
-          IdProvincia = @IdProvincia,
-          Telefono = @Telefono,
-          Mail = @Mail,
-          Denominacion = @Denominacion,
-          Activo = @Activo
-        WHERE Id = @Id
-      `);
+    const sql = `
+      UPDATE Proveedor SET
+        CodigoTributario = ?,
+        Direccion = ?,
+        IdLocalidad = ?,
+        IdProvincia = ?,
+        Telefono = ?,
+        Mail = ?,
+        Denominacion = ?,
+        Activo = ?
+      WHERE Id = ?
+    `;
+    const params = [
+      proveedor.CodigoTributario,
+      proveedor.Direccion,
+      proveedor.IdLocalidad,
+      proveedor.IdProvincia,
+      proveedor.Telefono,
+      proveedor.Mail,
+      proveedor.Denominacion,
+      proveedor.Activo,
+      id
+    ];
+    await pool.query(sql, params);
   } catch (err) {
+    console.error('Error al actualizar proveedor:', err);
     throw err;
   }
 }
 
-//Obtener proveedores activos
+// Obtener proveedores activos
 async function getProveedoresActivos() {
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request().query(`
+    const [rows] = await pool.query(`
       SELECT Id, CodigoTributario, Denominacion
       FROM Proveedor
       WHERE Activo = 1
     `);
-    return result.recordset;
-  } catch (error) {
-    console.error('Error al obtener proveedores:', error);
-    throw error;
+    return rows;
+  } catch (err) {
+    console.error('Error al obtener proveedores activos:', err);
+    throw err;
   }
 }
 
-
 module.exports = {
-    getProveedores,
-    getProveedorPorId,
-    insertarProveedor,
-    actualizarProveedor,
-    getProveedoresActivos
+  getProveedores,
+  getProveedorPorId,
+  insertarProveedor,
+  actualizarProveedor,
+  getProveedoresActivos
 };

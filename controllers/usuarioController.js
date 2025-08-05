@@ -58,14 +58,3 @@ exports.modificarUsuario = async (req, res) => {
     }
 };
 
-// Eliminar usuario
-exports.eliminarUsuario = async (req, res) => {
-    try {
-        const id = req.params.id;
-        await usuarioModel.eliminarUsuario(id);
-        res.redirect('/usuarios');
-    } catch (err) {
-        console.error('Error al eliminar usuario:', err);
-        res.status(500).send('Error al eliminar usuario');
-    }
-};

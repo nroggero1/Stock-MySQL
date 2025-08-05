@@ -54,14 +54,3 @@ exports.modificarMarca = async (req, res) => {
         res.status(500).send('Error al modificar marca');
     }
 };
-
-// Eliminar una marca
-exports.eliminarMarca = async (req, res) => {
-    try {
-        const id = req.params.id;
-        await marcaModel.eliminarMarca(id);
-        res.redirect('/marcas');
-    } catch (err) {
-        res.status(500).send('Error al eliminar marca');
-    }
-};

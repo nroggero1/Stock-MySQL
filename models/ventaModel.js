@@ -1,10 +1,9 @@
-const sql = require("mssql");
-const config = require("../data/data");
+const pool = require('../data/data');
 
+// Obtener todas las ventas
 async function obtenerVentas() {
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request().query(`
+    const [rows] = await pool.query(`
       SELECT v.Id, v.Fecha, v.Importe,
              c.CodigoTributario, c.Denominacion,
              u.NombreUsuario AS Usuario,
@@ -14,42 +13,41 @@ async function obtenerVentas() {
       JOIN Usuario u ON v.IdUsuario = u.Id
       ORDER BY v.Fecha DESC
     `);
-    return result.recordset;
+    return rows;
   } catch (error) {
     console.error("Error al obtener ventas:", error.message);
     throw error;
   }
 }
 
+// Obtener ventas filtradas por usuario
 async function obtenerVentasPorUsuario(idUsuario) {
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request()
-      .input('idUsuario', sql.Int, idUsuario)
-      .query(`
-        SELECT v.Id, v.Fecha, v.Importe,
-               c.CodigoTributario, c.Denominacion,
-               u.NombreUsuario AS Usuario,
-               v.IdUsuario
-        FROM Venta v
-        JOIN Cliente c ON v.IdCliente = c.Id
-        JOIN Usuario u ON v.IdUsuario = u.Id
-        WHERE v.IdUsuario = @idUsuario
-        ORDER BY v.Fecha DESC
-      `);
-    return result.recordset;
+    const [rows] = await pool.query(`
+      SELECT v.Id, v.Fecha, v.Importe,
+             c.CodigoTributario, c.Denominacion,
+             u.NombreUsuario AS Usuario,
+             v.IdUsuario
+      FROM Venta v
+      JOIN Cliente c ON v.IdCliente = c.Id
+      JOIN Usuario u ON v.IdUsuario = u.Id
+      WHERE v.IdUsuario = ?
+      ORDER BY v.Fecha DESC
+    `, [idUsuario]);
+    return rows;
   } catch (error) {
     console.error("Error al obtener ventas por usuario:", error.message);
     throw error;
   }
 }
 
+// Insertar una nueva venta (con detalles y actualización de stock)
 async function insertarVenta({ idUsuario, idCliente, productos }) {
   if (!Array.isArray(productos) || productos.length === 0) {
     throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  // Agrupar productos por idProducto y bonificacion
+  // Agrupar por producto y bonificación
   const agrupados = productos.reduce((acc, p) => {
     const key = `${p.idProducto}_${p.bonificacion || 0}`;
     if (!acc[key]) {
@@ -67,110 +65,79 @@ async function insertarVenta({ idUsuario, idCliente, productos }) {
     bonificacion: Number(p.bonificacion || 0)
   }));
 
+  // Calcular importe total con bonificación
   const totalImporte = normalizados.reduce((acc, p) => {
     const bonif = (p.precioUnitario * p.bonificacion) / 100;
     const subTotal = (p.precioUnitario - bonif) * p.cantidad;
     return acc + subTotal;
   }, 0);
 
-  const pool = await sql.connect(config);
-  const request = pool.request();
-
-  request
-    .input("Fecha", sql.DateTime, new Date())
-    .input("IdUsuario", sql.Int, Number(idUsuario))
-    .input("IdCliente", sql.Int, Number(idCliente))
-    .input("Importe", sql.Decimal(10, 2), Number(totalImporte.toFixed(2)));
-
-  const values = [];
-  normalizados.forEach((p, i) => {
-    request
-      .input(`IdProducto_${i}`, sql.Int, p.idProducto)
-      .input(`Cantidad_${i}`, sql.Int, p.cantidad)
-      .input(`PrecioUnitario_${i}`, sql.Decimal(10, 2), Number(p.precioUnitario.toFixed(2)))
-      .input(`Bonificacion_${i}`, sql.Int, p.bonificacion);
-
-    values.push(`(@IdVenta, @IdProducto_${i}, @Cantidad_${i}, @PrecioUnitario_${i}, @Bonificacion_${i})`);
-  });
-
-  const detalleValuesClause = values.join(',\n      ');
-
-  const updateStockStatements = normalizados.map((_, i) => `
-    UPDATE Producto
-    SET Stock = Stock - @Cantidad_${i}
-    WHERE Id = @IdProducto_${i};
-  `).join('\n');
-
-  const sqlBatch = `
-BEGIN TRY
-  BEGIN TRAN;
-
-    INSERT INTO Venta (Fecha, IdUsuario, IdCliente, Importe)
-    VALUES (@Fecha, @IdUsuario, @IdCliente, @Importe);
-
-    DECLARE @IdVenta INT = SCOPE_IDENTITY();
-
-    INSERT INTO DetalleVenta (IdVenta, IdProducto, Cantidad, PrecioUnitario, Bonificacion)
-    VALUES
-      ${detalleValuesClause};
-
-    ${updateStockStatements}
-
-  COMMIT TRAN;
-
-  SELECT @IdVenta AS IdVenta;
-END TRY
-BEGIN CATCH
-  IF (XACT_STATE()) <> 0 ROLLBACK TRAN;
-  DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
-  RAISERROR(@ErrMsg, 16, 1);
-END CATCH;
-`;
-
+  const conn = await pool.getConnection();
   try {
-    const result = await request.query(sqlBatch);
-    const idVenta = result.recordset?.[0]?.IdVenta ?? null;
+    await conn.beginTransaction();
+
+    // Insertar venta
+    const [ventaResult] = await conn.query(`
+      INSERT INTO Venta (Fecha, IdUsuario, IdCliente, Importe)
+      VALUES (NOW(), ?, ?, ?)
+    `, [idUsuario, idCliente, totalImporte.toFixed(2)]);
+
+    const idVenta = ventaResult.insertId;
+
+    // Insertar detalles y actualizar stock
+    for (const p of normalizados) {
+      await conn.query(`
+        INSERT INTO DetalleVenta (IdVenta, IdProducto, Cantidad, PrecioUnitario, Bonificacion)
+        VALUES (?, ?, ?, ?, ?)
+      `, [idVenta, p.idProducto, p.cantidad, p.precioUnitario.toFixed(2), p.bonificacion]);
+
+      await conn.query(`
+        UPDATE Producto
+        SET Stock = Stock - ?
+        WHERE Id = ?
+      `, [p.cantidad, p.idProducto]);
+    }
+
+    await conn.commit();
     return idVenta;
   } catch (error) {
+    await conn.rollback();
     console.error("Error al insertar venta:", error.message);
     throw error;
+  } finally {
+    conn.release();
   }
 }
 
+// Consultar venta completa (encabezado + detalle)
 async function consultarVenta(idVenta) {
   try {
-    const pool = await sql.connect(config);
+    const [ventaRows] = await pool.query(`
+      SELECT v.Id, v.Fecha, v.Importe,
+             c.Denominacion AS Cliente,
+             c.CodigoTributario,
+             u.NombreUsuario AS Usuario,
+             v.IdUsuario
+      FROM Venta v
+      JOIN Cliente c ON v.IdCliente = c.Id
+      JOIN Usuario u ON v.IdUsuario = u.Id
+      WHERE v.Id = ?
+    `, [idVenta]);
 
-    const resultVenta = await pool.request()
-      .input("idVenta", sql.Int, idVenta)
-      .query(`
-        SELECT v.Id, v.Fecha, v.Importe,
-               c.Denominacion AS Cliente,
-               c.CodigoTributario,
-               u.NombreUsuario AS Usuario,
-               v.IdUsuario
-        FROM Venta v
-        JOIN Cliente c ON v.IdCliente = c.Id
-        JOIN Usuario u ON v.IdUsuario = u.Id
-        WHERE v.Id = @idVenta
-      `);
-
-    const venta = resultVenta.recordset[0];
+    const venta = ventaRows[0];
     if (!venta) return null;
 
-    const resultDetalle = await pool.request()
-      .input("idVenta", sql.Int, idVenta)
-      .query(`
-        SELECT pr.Nombre AS NombreProducto,
-               dv.Cantidad,
-               dv.PrecioUnitario,
-               dv.Bonificacion
-        FROM DetalleVenta dv
-        JOIN Producto pr ON dv.IdProducto = pr.Id
-        WHERE dv.IdVenta = @idVenta
-      `);
+    const [detalleRows] = await pool.query(`
+      SELECT pr.Nombre AS NombreProducto,
+             dv.Cantidad,
+             dv.PrecioUnitario,
+             dv.Bonificacion
+      FROM DetalleVenta dv
+      JOIN Producto pr ON dv.IdProducto = pr.Id
+      WHERE dv.IdVenta = ?
+    `, [idVenta]);
 
-    venta.productos = resultDetalle.recordset.map(p => ({
+    venta.productos = detalleRows.map(p => ({
       nombre: p.NombreProducto,
       cantidad: p.Cantidad,
       precioUnitario: p.PrecioUnitario,

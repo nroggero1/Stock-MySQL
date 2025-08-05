@@ -1,16 +1,13 @@
+const mysql = require('mysql2/promise');
 
-const sql = require('mssql/msnodesqlv8');
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: 'Admin', 
+  database: 'stock-mysql',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
-const config = {
-  server: 'localhost',
-  database: 'Stock',
-  driver: 'msnodesqlv8',
-  options: {
-    trustedConnection: true,
-    trustServerCertificate: true
-  }
-};
-
-module.exports = config ;
-
-
+module.exports = pool;

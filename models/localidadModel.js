@@ -1,19 +1,21 @@
-const sql = require('mssql');
+const mysql = require('mysql2/promise');
 const config = require('../data/data');
 
 // Obtener todas las localidades de una provincia
 async function getLocalidadesPorProvincia(idProvincia) {
-    try {
-        let pool = await sql.connect(config);
-        let result = await pool.request()
-            .input('IdProvincia', sql.Int, idProvincia)
-            .query('SELECT Id, Nombre FROM Localidad WHERE IdProvincia = @IdProvincia ORDER BY Nombre');
-        return result.recordset;
-    } catch (err) {
-        throw err;
-    }
+  try {
+    const connection = await mysql.createConnection(config);
+    const [rows] = await connection.execute(
+      'SELECT Id, Nombre FROM Localidad WHERE IdProvincia = ? ORDER BY Nombre',
+      [idProvincia]
+    );
+    await connection.end();
+    return rows;
+  } catch (err) {
+    throw err;
+  }
 }
 
 module.exports = {
-    getLocalidadesPorProvincia
+  getLocalidadesPorProvincia
 };
