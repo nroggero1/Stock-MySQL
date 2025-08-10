@@ -4,6 +4,12 @@
 
 <h2>Agregar Cliente</h2>
 
+<% if (typeof mensaje !== 'undefined') { %>
+<p style="color: <%= mensaje.includes('exitosamente') ? 'green' : 'red' %>;">
+  <%= mensaje %>
+</p>
+<% } %>
+
 <form method="POST" action="/clientes/agregar">
   <label>CUIL/CUIT/DNI:</label>
   <input type="number" name="codigoTributario" required maxlength="11" /><br />
@@ -18,14 +24,14 @@
   <select id="provinciaSelect" name="provincia" required>
     <option value="">Seleccione una provincia</option>
     <% provincias.forEach(p => { %>
-    <option value="<%= p.Id %>"><%= p.Nombre %></option>
-    <% }) %></select
-  ><br />
+      <option value="<%= p.Id %>"><%= p.Nombre %></option>
+    <% }) %>
+  </select><br />
 
   <label>Localidad:</label>
   <select id="localidadSelect" name="localidad" required>
-    <option value="">Seleccione una localidad</option></select
-  ><br />
+    <option value="">Seleccione una localidad</option>
+  </select><br />
 
   <label>Teléfono:</label>
   <input type="number" name="telefono" required maxlength="20" /><br />
@@ -36,8 +42,8 @@
   <label>Activo:</label>
   <select name="activo" disabled>
     <option value="1">Sí</option>
-    <option value="0">No</option></select
-  ><br /><br />
+    <option value="0">No</option>
+  </select><br /><br />
 
   <button type="submit">Guardar</button>
 </form>

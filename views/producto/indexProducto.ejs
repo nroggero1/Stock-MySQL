@@ -6,8 +6,7 @@
 
   <h2>Listado de productos</h2>
   <a href="/productos/agregar">Agregar nuevo producto</a>
-  <br>
-  <br>
+  <br><br>
   <table class="filtrable">
     <thead>
       <tr>
@@ -25,6 +24,7 @@
         <th>Stock mínimo</th>
         <th>Activo</th>
         <th>Fecha alta</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -36,10 +36,10 @@
           <td><%= p.CodigoBarras %></td>
           <td><%= p.Categoria %></td>
           <td><%= p.Marca %></td>
-          <td>$<%= p.PrecioCompra.toFixed(2) %></td>
+          <td>$<%= Number(p.PrecioCompra).toFixed(2) %></td>
           <td><%= p.PorcentajeGanancia %> %</td>
-          <td>$<%= p.PrecioVentaSugerido.toFixed(2) %></td>
-          <td>$<%= p.PrecioVenta.toFixed(2) %></td>
+          <td>$<%= Number(p.PrecioVentaSugerido).toFixed(2) %></td>
+          <td>$<%= Number(p.PrecioVenta).toFixed(2) %></td>
           <td><%= p.Stock %></td>
           <td><%= p.StockMinimo %></td>
           <td><%= p.Activo ? 'Sí' : 'No' %></td>
@@ -50,7 +50,7 @@
         </tr>
       <% }) %>
     </tbody>
-  </table class="filtrable">
+  </table>
 
   <script src="/functions/filtrosTablas.js"></script>
 

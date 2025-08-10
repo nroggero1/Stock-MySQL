@@ -1,14 +1,12 @@
-const mysql = require('mysql2/promise');
-const config = require('../data/data');
+const pool = require('../data/data');
 
 // Obtener todas las provincias
 async function getProvincias() {
   try {
-    const connection = await mysql.createConnection(config);
-    const [rows] = await connection.execute('SELECT * FROM Provincia');
-    await connection.end();
+    const [rows] = await pool.query('SELECT * FROM Provincia');
     return rows;
   } catch (err) {
+    console.error('Error al obtener provincias:', err);
     throw err;
   }
 }

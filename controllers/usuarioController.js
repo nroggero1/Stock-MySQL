@@ -48,7 +48,13 @@ exports.formModificarUsuario = async (req, res) => {
 // Modificar usuario
 exports.modificarUsuario = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = parseInt(req.params.id); // Aseguramos que sea un número
+
+        // No permitir modificación del usuario con ID 1
+        if (id === 1) {
+            return res.status(403).send('No se permite modificar este usuario.');
+        }
+
         const datos = req.body;
         await usuarioModel.actualizarUsuario(id, datos);
         res.redirect('/usuarios');
@@ -57,4 +63,3 @@ exports.modificarUsuario = async (req, res) => {
         res.status(500).send('Error al modificar usuario');
     }
 };
-

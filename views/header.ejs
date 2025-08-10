@@ -2,13 +2,12 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Mi Sistema</title>
-    <link rel="stylesheet" href="/styles/styles.css" />
-
+    <title>Distribuidora Negri</title>
+    <link rel="stylesheet" href="/styles/filtrosTablas.css" />
   </head>
   <body>
     <header>
-      <h1>Mi Sistema</h1>
+      <h1>Distribuidora Negri</h1>
       <nav>
         <% if (usuario) { %>
         <a href="/">Inicio</a>
@@ -20,12 +19,17 @@
         <a href="/proveedores">Proveedores</a>
         <a href="/clientes">Clientes</a>
         <a href="/compras">Compras</a>
-        <a href="/usuarios">Usuarios</a>
         <% } %>
 
         <a href="/ventas">Ventas</a>
         <a href="/productos/stock-bajo">Stock Bajo</a>
+
+        <% if (usuario.administrador) { %>
+        <a href="/usuarios">Usuarios</a>
+        <% } %>
+
         <a href="/logout">Cerrar sesión (<%= usuario.nombreUsuario %>)</a>
+
         <% } else { %>
         <a href="/login">Iniciar sesión</a>
         <% } %>

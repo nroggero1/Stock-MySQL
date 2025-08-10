@@ -1,141 +1,148 @@
-CREATE TABLE Provincia 
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Nombre nvarchar(50) NOT NULL
+use `stock-mysql-fabri`
+
+CREATE TABLE IF NOT EXISTS Provincia (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  PRIMARY KEY (Id)
+);
+
+CREATE TABLE IF NOT EXISTS Localidad (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  IdProvincia INT NOT NULL,
+  CodigoPostal SMALLINT NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdProvincia) REFERENCES Provincia(Id)
+);
+
+CREATE TABLE IF NOT EXISTS Proveedor (
+  Id INT NOT NULL AUTO_INCREMENT,
+  CodigoTributario BIGINT NOT NULL,
+  Direccion VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  IdLocalidad INT NOT NULL,
+  IdProvincia INT NOT NULL,
+  Telefono VARCHAR(20) CHARACTER SET utf8mb4,
+  Mail VARCHAR(50) CHARACTER SET utf8mb4,
+  Denominacion VARCHAR(100) CHARACTER SET utf8mb4 NOT NULL,
+  FechaAlta DATETIME(6) NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdLocalidad) REFERENCES Localidad(Id),
+  FOREIGN KEY (IdProvincia) REFERENCES Provincia(Id)
+);
+
+CREATE TABLE IF NOT EXISTS Cliente (
+  Id INT NOT NULL AUTO_INCREMENT,
+  CodigoTributario BIGINT NOT NULL,
+  Direccion VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  IdLocalidad INT NOT NULL,
+  IdProvincia INT NOT NULL,
+  Telefono VARCHAR(20) CHARACTER SET utf8mb4,
+  Mail VARCHAR(50) CHARACTER SET utf8mb4,
+  Denominacion VARCHAR(100) CHARACTER SET utf8mb4,
+  FechaAlta DATETIME(6) NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdLocalidad) REFERENCES Localidad(Id),
+  FOREIGN KEY (IdProvincia) REFERENCES Provincia(Id)
+);
+
+CREATE TABLE IF NOT EXISTS Marca (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  FechaAlta DATETIME(6) NOT NULL,
+  PRIMARY KEY (Id)
+);
+
+CREATE TABLE IF NOT EXISTS Categoria (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  FechaAlta DATETIME(6) NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  PRIMARY KEY (Id)
+);
+
+CREATE TABLE IF NOT EXISTS Producto (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) CHARACTER SET utf8mb4 NOT NULL,
+  Descripcion VARCHAR(100) CHARACTER SET utf8mb4 NOT NULL,
+  CodigoBarras VARCHAR(30) CHARACTER SET utf8mb4 NOT NULL,
+  IdCategoria INT NOT NULL,
+  IdMarca INT NOT NULL,
+  PrecioCompra DECIMAL(12,2) NOT NULL,
+  PorcentajeGanancia INT NOT NULL,
+  PrecioVentaSugerido DECIMAL(12,2) NOT NULL,
+  PrecioVenta DECIMAL(12,2) NOT NULL,
+  Stock INT NOT NULL,
+  StockMinimo INT NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  FechaAlta DATETIME(6) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdCategoria) REFERENCES Categoria(Id),
+  FOREIGN KEY (IdMarca) REFERENCES Marca(Id)
+);
+
+CREATE TABLE IF NOT EXISTS Usuario (
+  Id INT NOT NULL AUTO_INCREMENT,
+  NombreUsuario VARCHAR(50) NOT NULL,
+  Nombre VARCHAR(50) NOT NULL,
+  Apellido VARCHAR(50) NOT NULL,
+  Mail VARCHAR(50) CHARACTER SET utf8mb4,
+  FechaNacimiento DATETIME(6) NOT NULL,
+  Clave VARCHAR(50) NOT NULL,
+  Administrador TINYINT(1) NOT NULL,
+  FechaAlta DATETIME(6) NOT NULL,
+  Activo TINYINT(1) NOT NULL,
+  PRIMARY KEY (Id)
 )
-GO 
 
-CREATE TABLE Localidad
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Nombre nvarchar(50) NOT NULL,
-	IdProvincia int NOT NULL REFERENCES Provincia(Id),
-	CodigoPostal smallint NOT NULL
-)
-GO
+CREATE TABLE IF NOT EXISTS Compra (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Fecha DATETIME(6),
+  IdUsuario INT,
+  IdProveedor INT,
+  Importe DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdUsuario) REFERENCES Usuario(Id),
+  FOREIGN KEY (IdProveedor) REFERENCES Proveedor(Id)
+);
 
-CREATE TABLE Proveedor
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	CodigoTributario bigint NOT NULL,
-	Direccion nvarchar(50) NOT NULL,
-	IdLocalidad int NOT NULL REFERENCES Localidad(Id),
-	IdProvincia int NOT NULL REFERENCES Provincia(Id),
-	Telefono nvarchar(20), 
-	Mail NVARCHAR(50),
-	Denominacion NVARCHAR(100) NOT NULL,
-	FechaAlta datetime NOT NULL,
-	Activo bit NOT NULL
-)
-GO
+CREATE TABLE IF NOT EXISTS DetalleCompra (
+  Id INT NOT NULL AUTO_INCREMENT,
+  IdCompra INT,
+  IdProducto INT,
+  Cantidad INT NOT NULL,
+  PrecioUnitario DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdCompra) REFERENCES Compra(Id),
+  FOREIGN KEY (IdProducto) REFERENCES Producto(Id)
+);
 
-CREATE TABLE Cliente
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	CodigoTributario bigint NOT NULL,
-	Direccion nvarchar(50) NOT NULL,
-	IdLocalidad int NOT NULL REFERENCES Localidad(Id),
-	IdProvincia int NOT NULL REFERENCES Provincia(Id),
-	Telefono nvarchar(20), 
-	Mail NVARCHAR(50),
-	Denominacion NVARCHAR(100),
-	FechaAlta datetime NOT NULL,
-	Activo bit NOT NULL
-)
-GO
+CREATE TABLE IF NOT EXISTS Venta (
+  Id INT NOT NULL AUTO_INCREMENT,
+  Fecha DATETIME(6),
+  IdUsuario INT,
+  IdCliente INT,
+  Importe DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdUsuario) REFERENCES Usuario(Id),
+  FOREIGN KEY (IdCliente) REFERENCES Cliente(Id)
+);
 
-CREATE TABLE Marca
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Nombre nvarchar(50) NOT NULL,
-	Activo bit NOT NULL,
-	FechaAlta datetime NOT NULL
-)
-GO
+CREATE TABLE IF NOT EXISTS DetalleVenta (
+  Id INT NOT NULL AUTO_INCREMENT,
+  IdVenta INT,
+  IdProducto INT,
+  Cantidad INT NOT NULL,
+  PrecioUnitario DECIMAL(10,2) NOT NULL,
+  Bonificacion INT NOT NULL,
+  PRIMARY KEY (Id),
+  FOREIGN KEY (IdVenta) REFERENCES Venta(Id),
+  FOREIGN KEY (IdProducto) REFERENCES Producto(Id)
+);
 
-CREATE TABLE Categoria
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Nombre nvarchar(50) NOT NULL,
-	FechaAlta datetime NOT NULL,
-	Activo bit NOT NULL,
-) 
-GO
-
-CREATE TABLE Producto
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Nombre nvarchar(50) NOT NULL,
-	Descripcion nvarchar(100) NOT NULL,
-	CodigoBarras nvarchar(30) NOT NULL,
-	IdCategoria int NOT NULL REFERENCES Categoria(Id),
-	IdMarca int NOT NULL REFERENCES Marca(Id),
-	PrecioCompra decimal(12, 2) NOT NULL,
-	PorcentajeGanancia int NOT NULL,
-	PrecioVentaSugerido decimal(12, 2) NOT NULL,
-	PrecioVenta decimal(12, 2) NOT NULL,
-	Stock int NOT NULL,
-	StockMinimo int NOT NULL,
-	Activo bit NOT NULL,
-	FechaAlta datetime NOT NULL
-)
-GO
-
-CREATE TABLE Usuario
-(
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	NombreUsuario varchar(50) NOT NULL,
-	Nombre varchar(50) NOT NULL,
-	Apellido varchar(50) NOT NULL,
-	Mail NVARCHAR(50),
-	FechaNacimiento [datetime] NOT NULL,
-	Clave varchar(50) NOT NULL,
-	Administrador bit NOT NULL,
-	FechaAlta datetime NOT NULL,
-	Activo bit NOT NULL
-) 
-GO
-
-CREATE TABLE Compra
-(	
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Fecha datetime,
-	IdUsuario int REFERENCES Usuario(Id),
-	IdProveedor int REFERENCES Proveedor(Id),
-	Importe DECIMAL(10,2) NOT NULL
-) 
-GO
-
-CREATE TABLE DetalleCompra
-(	
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	IdCompra int REFERENCES Compra(Id),
-	IdProducto int REFERENCES Producto(Id),
-	Cantidad int NOT NULL,
-	PrecioUnitario DECIMAL(10,2) NOT NULL,
-) 
-GO
-
-CREATE TABLE Venta
-(	
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Fecha datetime,
-	IdUsuario int REFERENCES Usuario(Id),
-	IdCliente int REFERENCES Cliente(Id),
-	Importe DECIMAL(10,2) NOT NULL
-) 
-GO
-
-CREATE TABLE DetalleVenta
-(	
-	Id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	IdVenta int REFERENCES Venta(Id),
-	IdProducto int REFERENCES Producto(Id),
-	Cantidad int NOT NULL,
-	PrecioUnitario DECIMAL(10,2) NOT NULL,
-	Bonificacion int NOT NULL
-) 
-GO
+SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO Provincia(Nombre) VALUES
 ('Ciudad Autonoma de Buenos Aires (CABA)'),
@@ -850,7 +857,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (13,'ZAVALLA','2123'),
 (13,'ARRUFO','2344'),
 (13,'DHO','3070'),
-(13,'','3072'),
 (13,'ALEJANDRA','3051'),
 (13,'CAMPO COUBERT','3056'),
 (13,'CA','3052'),
@@ -908,7 +914,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (13,'LUCIANO LEIVA','3048'),
 (13,'MARCELINO ESCALADA','3042'),
 (13,'MIGUEL ESCALADA','3046'),
-(13,'','3041'),
 (13,'NARE','3046'),
 (13,'NUEVA UKRANIA','3046'),
 (13,'PAIKIN','3046'),
@@ -1029,7 +1034,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (13,'LOS PALMARES','3057'),
 (13,'LOS TABANOS DESVIO KM 366','3551'),
 (13,'MARGARITA','3056'),
-(13,'','3553'),
 (13,'OGILVIE','3551'),
 (13,'PARAJE 29','3553'),
 (13,'PARAJE TRAGNAGHI','3551'),
@@ -3188,7 +3192,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (22,'FITATIMEN','8415'),
 (22,'LAS BAYAS','8412'),
 (22,'MAMUEL CHOIQUE','8415'),
-(22,'','8415'),
 (22,'PORTEZUELO','8415'),
 (22,'REPOLLOS','8415'),
 (22,'RIO CHICO','8415'),
@@ -3216,7 +3219,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (22,'LA QUEBRADA','8412'),
 (22,'MENUCO VACA MUERTA','8412'),
 (22,'NENEO RUCA','8416'),
-(22,'','8400'),
 (22,'PANQUEHUAO','8412'),
 (22,'PASO CHACABUCO','8401'),
 (22,'PASO DE LOS MOLLES','8412'),
@@ -3699,7 +3701,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (8,'LOS TERNEROS','5600'),
 (8,'MINAS DEL NEVADO','5605'),
 (8,'MONTE COMAN','5609'),
-(8,'','5595'),
 (8,'PALERMO CHICO','5624'),
 (8,'PEDRO VARGAS','5603'),
 (8,'PIEDRA DE AFILAR','5615'),
@@ -4424,7 +4425,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (17,'LAGO PUELO','8431'),
 (17,'LAS GOLONDRINAS','8430'),
 (17,'LELEQUE','9213'),
-(17,'','8415'),
 (17,'RANQUIL HUAO','9213'),
 (17,'SIEMPRE VIVA','9213'),
 (17,'CERRO FOFOCAHUEL','9213'),
@@ -4949,7 +4949,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (20,'HAYCU','8349'),
 (20,'NALAY CULLIN','8349'),
 (20,'NAU NAUCO','8351'),
-(20,'','8349'),
 (20,'PICHAIHUE','8351'),
 (20,'PICHI NEUQUEN','8351'),
 (20,'RANQUELES','8349'),
@@ -5056,7 +5055,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (20,'LAS CORTADERAS','8340'),
 (20,'LOS MUCHACHOS','8340'),
 (20,'MARIANO MORENO','8351'),
-(20,'','8340'),
 (20,'OJO DE AGUA','8340'),
 (20,'PASO DE LOS INDIOS','8318'),
 (20,'PORTADA COVUNCO','8340'),
@@ -5800,7 +5798,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (6,'LAS MERCEDES','2854'),
 (6,'LOS AMIGOS','2828'),
 (6,'MAZARUCA','2846'),
-(6,'','2821'),
 (6,'PALAVECINO','2820'),
 (6,'PARANA BRAVO','2805'),
 (6,'PASO DEL CISNERO','2846'),
@@ -7047,7 +7044,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (5,'LAPACHO','3483'),
 (5,'LOMAS SAN JUAN','3483'),
 (5,'LORETO','3483'),
-(5,'','3483'),
 (5,'OMBU','3485'),
 (5,'PALMA SOLA','3485'),
 (5,'SAN MIGUEL','3485'),
@@ -9821,7 +9817,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'MATO YACO','4122'),
 (15,'MIRANDA','4124'),
 (15,'MONTE BELLO','4124'),
-(15,'','4122'),
 (15,'PERUCHO','4124'),
 (15,'PIE DE LA CUESTA','4124'),
 (15,'PINGOLLAR','4124'),
@@ -10473,7 +10468,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (9,'LOS CORIAS','5471'),
 (9,'LOS OROS','5470'),
 (9,'MASCASIN','5471'),
-(9,'','5471'),
 (9,'PORTEZUELO DE LOS ARCE','5471'),
 (9,'PUNTA DEL CERRO','5470'),
 (9,'QUEBRADA DEL VALLECITO','5471'),
@@ -11509,7 +11503,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (12,'NILINAST','6277'),
 (12,'NUEVA ESPERANZA','6279'),
 (12,'NUEVA GALIA','6216'),
-(12,'','6279'),
 (12,'PASO DE LOS GAUCHOS','6216'),
 (12,'PENICE','6279'),
 (12,'PLACILLA','6277'),
@@ -14182,7 +14175,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (6,'PASO MARGARI','3200'),
 (8,'N ZAPATA','5594'),
-(8,'','5595'),
 (8,'NAVARRO','5594'),
 (18,'OLEGARIO VICTOR ANDRADE','3630'),
 (8,'P ROSALES','5594'),
@@ -15266,7 +15258,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (11,'REFUGIO LOS GAUCHOS','5409'),
 (6,'SEPTIMO DISTRITO','3150'),
 (6,'ALDEA SAN MIGUEL','3116'),
-(5,'','3453'),
 (5,'8 DE DICIEMBRE','3450'),
 (6,'ALDEA SANTA MARIA','3123'),
 (5,'PASO BANDERA','3454'),
@@ -15724,7 +15715,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (8,'PO VALLE HERMOSO','5539'),
 (5,'ESTANCIA LA CAROLINA','3230'),
 (8,'POLVAREDAS','5551'),
-(5,'','3230'),
 (8,'PORTILLO DE LOMAS COLORADAS','5539'),
 (5,'PASO ROSARIO','3230'),
 (5,'RINCON DE YAGUARY','3234'),
@@ -19773,7 +19763,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (4,'MEDIA LUNA','5125'),
 (4,'MULA MUERTA','5221'),
 (4,'NINTES','5220'),
-(4,'','5111'),
 (4,'NU','5131'),
 (4,'OJO DE AGUA','5220'),
 (4,'PAJAS BLANCAS','5111'),
@@ -20215,7 +20204,6 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'MOLLE YACO','4124'),
 (4,'SAN ISIDRO','5875'),
 (4,'SAN JAVIER','5875'),
-(15,'','4122'),
 (15,'PANTANILLO','4124'),
 (15,'PORTEZUELO','4124'),
 (15,'POSTA VIEJA','4122'),
@@ -23165,4 +23153,4 @@ DBCC CHECKIDENT ('Compra', RESEED, 1);
 DBCC CHECKIDENT ('Venta', RESEED, 1);
 
 INSERT INTO Usuario (NombreUsuario, Nombre, Apellido, Mail, FechaNacimiento, Clave, Administrador, FechaAlta, Activo)
-VALUES ('Nroggero', 'NICOLAS', 'ROGGERO', 'roggero.n@gmail.com', '1992-04-03', '36602182', 1, GETDATE(), 1);
+VALUES ('Nroggero', 'NICOLAS', 'ROGGERO', 'roggero.n@gmail.com', '1992-04-03', '36602182', 1, NOW(), 1);

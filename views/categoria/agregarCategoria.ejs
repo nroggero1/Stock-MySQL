@@ -4,11 +4,15 @@
 
 <h2>Agregar Categoría</h2>
 
+<% if (typeof mensaje !== 'undefined') { %>
+<p style="color: <%= mensaje.includes('registrada') ? 'green' : 'red' %>;">
+  <%= mensaje %>
+</p>
+<% } %>
+
 <form method="POST" action="/categorias/agregar">
   <label>Nombre:</label>
-  <input type="text" name="nombre" required maxlength="50" /><br />
-  <br />
-  <br />
+  <input type="text" name="nombre" required maxlength="50" /><br /><br />
   <button type="submit">Guardar</button>
 </form>
 

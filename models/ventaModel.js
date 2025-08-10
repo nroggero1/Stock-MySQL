@@ -13,7 +13,12 @@ async function obtenerVentas() {
       JOIN Usuario u ON v.IdUsuario = u.Id
       ORDER BY v.Fecha DESC
     `);
-    return rows;
+
+    // Convertir Importe a número
+    return rows.map(row => ({
+      ...row,
+      Importe: parseFloat(row.Importe)
+    }));
   } catch (error) {
     console.error("Error al obtener ventas:", error.message);
     throw error;
@@ -34,7 +39,11 @@ async function obtenerVentasPorUsuario(idUsuario) {
       WHERE v.IdUsuario = ?
       ORDER BY v.Fecha DESC
     `, [idUsuario]);
-    return rows;
+
+    return rows.map(row => ({
+      ...row,
+      Importe: parseFloat(row.Importe)
+    }));
   } catch (error) {
     console.error("Error al obtener ventas por usuario:", error.message);
     throw error;
@@ -47,7 +56,7 @@ async function insertarVenta({ idUsuario, idCliente, productos }) {
     throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  // Agrupar por producto y bonificación
+  // Agrupar productos por id + bonificación
   const agrupados = productos.reduce((acc, p) => {
     const key = `${p.idProducto}_${p.bonificacion || 0}`;
     if (!acc[key]) {
@@ -67,8 +76,7 @@ async function insertarVenta({ idUsuario, idCliente, productos }) {
 
   // Calcular importe total con bonificación
   const totalImporte = normalizados.reduce((acc, p) => {
-    const bonif = (p.precioUnitario * p.bonificacion) / 100;
-    const subTotal = (p.precioUnitario - bonif) * p.cantidad;
+    const subTotal = p.precioUnitario * p.cantidad * (1 - p.bonificacion / 100);
     return acc + subTotal;
   }, 0);
 
@@ -81,11 +89,19 @@ async function insertarVenta({ idUsuario, idCliente, productos }) {
       INSERT INTO Venta (Fecha, IdUsuario, IdCliente, Importe)
       VALUES (NOW(), ?, ?, ?)
     `, [idUsuario, idCliente, totalImporte.toFixed(2)]);
-
     const idVenta = ventaResult.insertId;
 
-    // Insertar detalles y actualizar stock
+    // Insertar detalles y descontar stock
     for (const p of normalizados) {
+      const [[{ Stock }]] = await conn.query(
+        `SELECT Stock FROM Producto WHERE Id = ?`,
+        [p.idProducto]
+      );
+
+      if (Stock < p.cantidad) {
+        throw new Error(`Stock insuficiente para el producto con ID ${p.idProducto}.`);
+      }
+
       await conn.query(`
         INSERT INTO DetalleVenta (IdVenta, IdProducto, Cantidad, PrecioUnitario, Bonificacion)
         VALUES (?, ?, ?, ?, ?)
@@ -124,8 +140,14 @@ async function consultarVenta(idVenta) {
       WHERE v.Id = ?
     `, [idVenta]);
 
-    const venta = ventaRows[0];
-    if (!venta) return null;
+    const ventaRow = ventaRows[0];
+    if (!ventaRow) return null;
+
+    // Convertir Importe a número
+    const venta = {
+      ...ventaRow,
+      Importe: parseFloat(ventaRow.Importe)
+    };
 
     const [detalleRows] = await pool.query(`
       SELECT pr.Nombre AS NombreProducto,
@@ -140,8 +162,8 @@ async function consultarVenta(idVenta) {
     venta.productos = detalleRows.map(p => ({
       nombre: p.NombreProducto,
       cantidad: p.Cantidad,
-      precioUnitario: p.PrecioUnitario,
-      bonificacion: p.Bonificacion
+      precioUnitario: parseFloat(p.PrecioUnitario),
+      bonificacion: parseFloat(p.Bonificacion)
     }));
 
     return venta;

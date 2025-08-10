@@ -37,6 +37,20 @@ async function getProveedorPorId(id) {
   }
 }
 
+// Obtener proveedor por Código Tributario
+async function getProveedorPorCodigoTributario(codigoTributario) {
+  try {
+    const [rows] = await pool.query(
+      'SELECT Id, Activo FROM Proveedor WHERE CodigoTributario = ?',
+      [codigoTributario]
+    );
+    return rows[0]; // Devuelve el proveedor si existe
+  } catch (err) {
+    console.error('Error al buscar proveedor por Código Tributario:', err);
+    throw err;
+  }
+}
+
 // Insertar nuevo proveedor
 async function insertarProveedor(proveedor) {
   try {
@@ -115,5 +129,6 @@ module.exports = {
   getProveedorPorId,
   insertarProveedor,
   actualizarProveedor,
-  getProveedoresActivos
+  getProveedoresActivos,
+  getProveedorPorCodigoTributario
 };

@@ -25,13 +25,19 @@ async function insertarCompra({ idProveedor, idUsuario, productos }) {
     throw new Error('La lista de productos no puede estar vacía.');
   }
 
-  const productosNormalizados = productos.map(p => ({
+const productosNormalizados = productos.map(p => {
+  const precioUnitario = parseFloat(p.precioUnitario) || 0;
+  const porcentajeGanancia = parseFloat(p.porcentajeGanancia) || 0;
+  const precioVenta = parseFloat(p.precioVenta) || 0;
+
+  return {
     idProducto: Number(p.idProducto),
     cantidad: Number(p.cantidad),
-    precioUnitario: Number(p.precioUnitario),
-    porcentajeGanancia: Number(p.porcentajeGanancia),
-    precioVenta: Number(p.precioVenta)
-  }));
+    precioUnitario,
+    porcentajeGanancia,
+    precioVenta
+  };
+});
 
   const totalImporte = productosNormalizados.reduce(
     (acc, p) => acc + p.cantidad * p.precioUnitario,

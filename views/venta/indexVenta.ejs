@@ -24,7 +24,8 @@
           <td><%= v.Id %></td>
           <td><%= v.CodigoTributario %></td>
           <td><%= v.Denominacion %></td>
-          <td>$<%= v.Importe.toFixed(2) %></td>
+          <td>$<%= parseFloat(v.Importe).toFixed(2) %></td>
+
           <td>
             <%= v.Fecha ? new Date(v.Fecha).toISOString().slice(0,10).replace(/-/g, '/') : '' %>
           </td>

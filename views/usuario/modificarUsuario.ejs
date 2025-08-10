@@ -7,40 +7,41 @@
   <label>Nombre de usuario:</label>
   <input type="text" name="nombreUsuario" value="<%= usuarioMod.NombreUsuario %>" required maxlength="50">
   <br>
-
+  <br>
   <label>Clave:</label>
   <input type="password" name="clave" value="<%= usuarioMod.Clave %>" required maxlength="50">
   <br>
-
+  <br>
   <label>Nombre:</label>
   <input type="text" name="nombre" value="<%= usuarioMod.Nombre %>" required maxlength="50">
   <br>
-
+  <br>
   <label>Apellido:</label>
   <input type="text" name="apellido" value="<%= usuarioMod.Apellido %>" required >
   <br>
-
+  <br>
   <label>Email:</label>
   <input type="email" name="mail" value="<%= usuarioMod.Mail %>" required>
   <br>
-
+  <br>
   <label>Fecha de nacimiento:</label>
   <input type="date" name="fechaNacimiento" value="<%= usuarioMod.FechaNacimiento ? new Date(usuarioMod.FechaNacimiento).toISOString().slice(0, 10) : '' %>" required>
   <br>
-
+  <br>
   <label>Administrador:</label>
   <select name="administrador">
     <option value="1" <%= usuarioMod.Administrador ? 'selected' : '' %>>Sí</option>
     <option value="0" <%= !usuarioMod.Administrador ? 'selected' : '' %>>No</option>
   </select>
   <br>
-
+  <br>
   <label>Activo:</label>
   <select name="activo">
     <option value="1" <%= usuarioMod.Activo ? 'selected' : '' %>>Sí</option>
     <option value="0" <%= !usuarioMod.Activo ? 'selected' : '' %>>No</option>
   </select>
-  <br><br>
+  <br>
+  <br>
 
   <button type="submit">Actualizar</button>
 </form>

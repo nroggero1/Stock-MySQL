@@ -93,4 +93,5 @@ router.get('/ventas/agregar', verificarAutenticacion, ventaController.formAgrega
 router.post('/ventas/agregar', verificarAutenticacion, ventaController.agregarVenta);
 router.get('/ventas/consultar/:idVenta', verificarAutenticacion, ventaController.consultarVenta);
 
+
 module.exports = router;

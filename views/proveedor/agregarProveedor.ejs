@@ -4,6 +4,12 @@
 
 <h2>Agregar Proveedor</h2>
 
+<% if (typeof mensaje !== 'undefined') { %>
+  <p style="color: <%= mensaje.includes('exitosamente') ? 'green' : 'red' %>;">
+    <%= mensaje %>
+  </p>
+<% } %>
+
 <form method="POST" action="/proveedores/agregar">
   <label>Código tributario:</label>
   <input type="number" name="codigoTributario" required maxlength="11" /><br />

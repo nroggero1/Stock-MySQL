@@ -1,17 +1,17 @@
 let productosVenta = [];
 
-// --- Validación de stock antes de registrar la venta ---
+// --- Validar stock antes de registrar la venta ---
 function validarStockProductos(productos) {
   const errores = [];
 
-  productos.forEach((producto) => {
-    if (!producto.activo) {
-      errores.push(`Producto "${producto.nombre}" está inactivo.`);
-    } else if (producto.stock <= 0) {
-      errores.push(`Producto "${producto.nombre}" no tiene stock disponible.`);
-    } else if (producto.cantidad > producto.stock) {
+  productos.forEach((p) => {
+    if (!p.activo) {
+      errores.push(`Producto "${p.nombre}" está inactivo.`);
+    } else if (p.stock <= 0) {
+      errores.push(`Producto "${p.nombre}" no tiene stock disponible.`);
+    } else if (p.cantidad > p.stock) {
       errores.push(
-        `Producto "${producto.nombre}" excede el stock disponible (${producto.stock}).`
+        `Producto "${p.nombre}" excede el stock disponible (${p.stock}).`
       );
     }
   });
@@ -34,24 +34,27 @@ function buscarProductoPorCodigo() {
     })
     .then((producto) => {
       if (!producto.Activo || producto.Stock <= 0) {
-        alert(`Producto no disponible: inactivo o sin stock.`);
-        return limpiarCamposProducto();
+        alert("Producto no disponible: inactivo o sin stock.");
+        limpiarCamposProducto();
+        return;
       }
 
-      document.getElementById("producto").value = producto.Nombre;
-      document.getElementById("marca").value = producto.Marca;
-      document.getElementById("categoria").value = producto.Categoria;
-      document.getElementById("stock").value = producto.Stock;
-      document.getElementById("precioUnitario").value = producto.PrecioVenta.toFixed(2);
-      document.getElementById("bonificacion").value = "0"; 
+      const precio = Number(producto.PrecioVenta);
 
       const input = document.getElementById("producto");
+      input.value = producto.Nombre;
       input.dataset.id = producto.Id;
-      input.dataset.precio = producto.PrecioVenta;
+      input.dataset.precio = precio;
       input.dataset.marcaNombre = producto.Marca;
       input.dataset.categoriaNombre = producto.Categoria;
       input.dataset.stock = producto.Stock;
-      input.dataset.activo = producto.Activo;
+      input.dataset.activo = producto.Activo ? "true" : "false";
+
+      document.getElementById("marca").value = producto.Marca;
+      document.getElementById("categoria").value = producto.Categoria;
+      document.getElementById("stock").value = producto.Stock;
+      document.getElementById("precioUnitario").value = precio.toFixed(2);
+      document.getElementById("bonificacion").value = "0";
     })
     .catch((err) => {
       limpiarCamposProducto();
@@ -59,13 +62,21 @@ function buscarProductoPorCodigo() {
     });
 }
 
-// --- Limpiar campos ---
+// --- Limpiar campos del formulario ---
 function limpiarCamposProducto() {
-  const campos = ["producto", "marca", "categoria", "stock", "cantidad", "precioUnitario", "bonificacion"];
-  campos.forEach((id) => (document.getElementById(id).value = ""));
+  const ids = [
+    "producto",
+    "marca",
+    "categoria",
+    "stock",
+    "cantidad",
+    "precioUnitario",
+    "bonificacion",
+  ];
+  ids.forEach((id) => (document.getElementById(id).value = ""));
 
   const input = document.getElementById("producto");
-  ["id", "precio", "marcaNombre", "categoriaNombre", "stock", "activo", "precioUnitario", "bonificacion"].forEach(
+  ["id", "precio", "marcaNombre", "categoriaNombre", "stock", "activo"].forEach(
     (attr) => delete input.dataset[attr]
   );
 }
@@ -73,37 +84,53 @@ function limpiarCamposProducto() {
 // --- Agregar producto a la lista ---
 function agregarProducto() {
   const input = document.getElementById("producto");
+
   const idProducto = input.dataset.id;
-  const nombre = input.value;
-  const cantidad = parseInt(document.getElementById("cantidad").value);
+  const nombre = input.value.trim();
+  const cantidad = parseInt(document.getElementById("cantidad").value, 10);
   const precio = parseFloat(input.dataset.precio);
   const marca = input.dataset.marcaNombre;
   const categoria = input.dataset.categoriaNombre;
-  const stock = parseInt(input.dataset.stock);
-  const bonificacion = parseFloat(document.getElementById("bonificacion").value) || 0;
+  const stock = parseInt(input.dataset.stock, 10);
+  const bonificacion =
+    parseFloat(document.getElementById("bonificacion").value) || 0;
   const activo = input.dataset.activo === "true";
 
-  if (!idProducto || isNaN(cantidad) || cantidad <= 0) {
+  if (
+    !idProducto ||
+    !nombre ||
+    isNaN(cantidad) ||
+    cantidad <= 0 ||
+    isNaN(precio)
+  ) {
     return alert("Datos incompletos o inválidos.");
   }
 
-  if (!activo || stock <= 0 || cantidad > stock) {
+  if (!activo) {
+    return alert(`El producto "${nombre}" está inactivo y no puede venderse.`);
+  }
+
+  if (stock <= 0) {
+    return alert(`El producto "${nombre}" no tiene stock disponible.`);
+  }
+
+  if (cantidad > stock) {
     return alert(
-      `No se puede agregar producto: condiciones de stock no válidas.`
+      `Cantidad solicitada (${cantidad}) supera el stock disponible (${stock}) del producto "${nombre}".`
     );
   }
 
-  // Buscar si ya existe el mismo producto con la misma bonificación
   const existente = productosVenta.find(
     (p) => p.idProducto === idProducto && p.bonificacion === bonificacion
   );
 
   if (existente) {
-    // Sumar cantidades
     existente.cantidad += cantidad;
-    existente.subTotal = (existente.precioUnitario * existente.cantidad) * (1 - existente.bonificacion / 100);
+    existente.subTotal =
+      existente.precioUnitario *
+      existente.cantidad *
+      (1 - existente.bonificacion / 100);
   } else {
-    // Agregar como nuevo registro
     productosVenta.push({
       idProducto,
       nombre,
@@ -112,7 +139,7 @@ function agregarProducto() {
       cantidad,
       precioUnitario: precio,
       bonificacion,
-      subTotal: (precio * cantidad) * (1 - (bonificacion / 100)),
+      subTotal: precio * cantidad * (1 - bonificacion / 100),
       stock,
       activo,
     });
@@ -122,14 +149,13 @@ function agregarProducto() {
   actualizarTabla();
 }
 
-
-// --- Eliminar producto ---
+// --- Eliminar producto de la tabla ---
 function eliminarProducto(index) {
   productosVenta.splice(index, 1);
   actualizarTabla();
 }
 
-// --- Actualizar tabla y totales ---
+// --- Actualizar tabla de productos agregados ---
 function actualizarTabla() {
   const tbody = document.querySelector("#tabla-venta tbody");
   const tfootExistente = document.querySelector("#tabla-venta tfoot");
@@ -181,11 +207,10 @@ function actualizarTabla() {
   tbody.parentElement.appendChild(tfoot);
 
   document.getElementById("importe-total").value = totalImporte.toFixed(2);
-  document.getElementById("productos-json").value =
-    JSON.stringify(productosVenta);
+  document.getElementById("productos-json").value = JSON.stringify(productosVenta);
 }
 
-// --- Validar antes de enviar ---
+// --- Validar antes de enviar venta ---
 function prepararEnvioVenta() {
   if (productosVenta.length === 0) {
     alert("Debe agregar al menos un producto.");
@@ -201,32 +226,42 @@ function prepararEnvioVenta() {
   return true;
 }
 
+
 // --- Exportar detalle de venta a PDF ---
 function exportarVentaPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const detalle = document.getElementById("detalle-venta");
-  
-  let y = 10;
 
+  const detalle = document.getElementById("detalle-venta");
+  const tabla = document.querySelector("#tabla-detalle tbody");
+
+  if (!detalle || !tabla) {
+    console.error("No se encontró el contenido de venta o la tabla.");
+    return;
+  }
+
+  let y = 10;
   const ventaId = document.getElementById("venta-id")?.textContent;
 
+  // Título
   doc.setFontSize(14);
   doc.text("Detalle de Venta", 10, y);
   y += 10;
 
-  detalle.querySelectorAll("p").forEach(p => {
-    const text = p.textContent;
+  // Exportar solo los <p> dentro de #detalle-venta
+  detalle.querySelectorAll("p").forEach((p) => {
     doc.setFontSize(10);
-    doc.text(text, 10, y);
+    doc.text(p.textContent.trim(), 10, y);
     y += 7;
   });
 
+  // Subtítulo tabla
   y += 5;
   doc.setFontSize(12);
   doc.text("Detalle de productos", 10, y);
   y += 8;
 
+  // Encabezado tabla
   doc.setFontSize(10);
   doc.text("Producto", 10, y);
   doc.text("Cant.", 50, y);
@@ -235,28 +270,119 @@ function exportarVentaPDF() {
   doc.text("Subtotal", 130, y);
   y += 6;
 
-  const filas = document.querySelectorAll("#tabla-detalle tbody tr");
-
-  filas.forEach(fila => {
+  // Filas de la tabla
+  tabla.querySelectorAll("tr").forEach((fila) => {
     const celdas = fila.querySelectorAll("td");
-    const producto = celdas[0].textContent;
-    const cantidad = celdas[1].textContent;
-    const precioUnit = celdas[2].textContent;
-    const bonificacion = celdas[3].textContent;
-    const subtotal = celdas[4].textContent;
+    if (celdas.length >= 5) {
+      const [producto, cantidad, precioUnit, bonificacion, subtotal] = [
+        celdas[0]?.textContent.trim(),
+        celdas[1]?.textContent.trim(),
+        celdas[2]?.textContent.trim(),
+        celdas[3]?.textContent.trim(),
+        celdas[4]?.textContent.trim(),
+      ];
 
-    if (y > 280) {
-      doc.addPage();
-      y = 10;
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+
+      doc.text(producto || "", 10, y);
+      doc.text(cantidad || "", 50, y);
+      doc.text(precioUnit || "", 70, y);
+      doc.text(bonificacion || "", 100, y);
+      doc.text(subtotal || "", 130, y);
+      y += 6;
     }
-
-    doc.text(producto, 10, y);
-    doc.text(cantidad, 50, y);
-    doc.text(precioUnit, 70, y);
-    doc.text(bonificacion, 100, y);
-    doc.text(subtotal, 130, y);
-    y += 6;
   });
 
-  doc.save(`Venta_${ventaId || 'detalle'}.pdf`);
+  // Crear blob del PDF
+  const pdfBlob = doc.output("blob");
+  const pdfURL = URL.createObjectURL(pdfBlob);
+
+  // Abrir una nueva pestaña vacía SIN header/footer
+  const nuevaVentana = window.open("", "_blank");
+
+  if (nuevaVentana) {
+    nuevaVentana.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+        <head>
+          <title>Distribuidora Negri - PDF</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              text-align: center;
+              margin: 40px;
+            }
+            iframe {
+              margin-top: 20px;
+              border: none;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Distribuidora Negri</h2>
+          <iframe src="${pdfURL}" width="90%" height="600px"></iframe>
+        </body>
+      </html>
+    `);
+    nuevaVentana.document.close();
+  } else {
+    alert("Por favor, habilitá las ventanas emergentes para ver el PDF.");
+  }
 }
+
+// --- Imprimir detalle de venta ---
+  function imprimirDetalleVenta() {
+    const contenido = document.getElementById("detalle-venta").innerHTML;
+
+    const ventana = window.open("", "_blank");
+
+    if (!ventana) {
+      alert("Por favor, habilitá las ventanas emergentes para imprimir.");
+      return;
+    }
+
+    ventana.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <title>Impresión Detalle de Venta</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+          }
+          h2, h3 {
+            margin-top: 0;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          th, td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>Distribuidora Negri</h2>
+        <h3>Tel: 3562-508288</h3>
+        ${contenido}
+        <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close();
+            };
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    ventana.document.close();
+  }

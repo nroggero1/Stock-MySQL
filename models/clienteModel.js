@@ -35,6 +35,19 @@ async function getClientePorId(id) {
   }
 }
 
+async function getClientePorCodigoTributario(codigoTributario) {
+  try {
+    const [rows] = await pool.query(
+      'SELECT Id, Activo FROM Cliente WHERE CodigoTributario = ?',
+      [codigoTributario]
+    );
+    return rows[0]; // Devuelve el cliente si existe
+  } catch (err) {
+    console.error('Error al buscar cliente por Código Tributario:', err);
+    throw err;
+  }
+}
+
 async function insertarCliente(cliente) {
   try {
     await pool.query(`
@@ -103,5 +116,6 @@ module.exports = {
   getClientePorId,
   insertarCliente,
   actualizarCliente,
-  getClientesActivos
+  getClientesActivos,
+  getClientePorCodigoTributario
 };

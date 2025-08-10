@@ -119,22 +119,20 @@ exports.buscarPorCodigoBarras = async (req, res) => {
   try {
     const codigo = req.params.codigoBarras;
     const producto = await productoModel.obtenerPorCodigoBarras(codigo);
+
     if (!producto) {
       return res.status(404).json({ mensaje: "Producto no encontrado" });
     }
+
     if (!producto.Activo) {
       return res.status(400).json({ mensaje: "Producto inactivo" });
     }
-    if (!producto.PrecioCompra || producto.PrecioCompra <= 0) {
-      return res
-        .status(400)
-        .json({ mensaje: "El producto no tiene un precio de compra válido." });
-    }
+    
     res.json(producto);
+
   } catch (error) {
     console.error("Error buscando el producto:", error);
-    res
-      .status(500)
-      .json({ mensaje: "Error buscando el producto. Intente nuevamente." });
+    res.status(500).json({ mensaje: "Error buscando el producto. Intente nuevamente." });
   }
 };
+

@@ -4,6 +4,7 @@
     <%- include('../header') %>
 
     <div id="detalle-venta">
+
       <h2>Detalle de la venta</h2>
       <p>
         <strong>Número de venta:</strong>
@@ -53,7 +54,8 @@
     </div>
 
     <div class="acciones">
-      <button onclick="window.print()">Imprimir</button>
+      <button onclick="imprimirDetalleVenta()">Imprimir</button>
+
       <button onclick="exportarVentaPDF()">Exportar a PDF</button>
     </div>
 
