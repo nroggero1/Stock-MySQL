@@ -4,7 +4,7 @@ const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: 'Admin', 
-  database: 'stock-mysql',
+  database: 'stock-mysql-fabri',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

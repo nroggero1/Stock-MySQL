@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
   FechaAlta DATETIME(6) NOT NULL,
   Activo TINYINT(1) NOT NULL,
   PRIMARY KEY (Id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Compra (
   Id INT NOT NULL AUTO_INCREMENT,
@@ -1166,7 +1166,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'VILLA MAZA','6343'),
 (2,'VILLA SAURI','6430'),
 (2,'YUTUYACO','6443'),
-(2,'ADOLFO GONZALES CHAVES','7513')
+(2,'ADOLFO GONZALES CHAVES','7513');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'ALZAGA','7021'),
 (2,'DE LA GARMA','7515'),
@@ -1212,7 +1212,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'LA REFORMA','7603'),
 (2,'LAS LOMAS','7603'),
 (2,'LAS PIEDRITAS','7605'),
-(2,'LOS PATOS','7603')
+(2,'LOS PATOS','7603');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'MAR DEL SUD','7607'),
 (2,'MECHONGUE','7605'),
@@ -2170,7 +2170,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'COLONIA FERRARI','7172'),
 (2,'HOGAR MARIANO ORTIZ BASUALDO','7172'),
 (2,'LA AMORILLA','7119'),
-(2,'LA COLORADA','7119')
+(2,'LA COLORADA','7119');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (2,'LAS ARMAS','7172'),
 (2,'MAIPU','7160'),
@@ -3171,7 +3171,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (22,'MAINQUE','8326'),
 (22,'PADRE ALEJANDRO STEFANELLI','8332'),
 (22,'PASO CORDOVA','8333'),
-(22,'PE','8307')
+(22,'PE','8307');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (22,'SAN JORGE','8324'),
 (22,'SARGENTO VIDAL','8305'),
@@ -4169,7 +4169,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (21,'BARRIO EL MOLINO','6360'),
 (21,'CAIMI','6361'),
 (21,'CARLOS BERG','6360'),
-(21,'COLONIA LA CARLOTA','6315')
+(21,'COLONIA LA CARLOTA','6315');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (21,'EL BELGICA','6331'),
 (21,'EL PARQUE','6331'),
@@ -5167,7 +5167,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (23,'LA ESPERANZA','9401'),
 (23,'LAGUNA COLORADA','9400'),
 (23,'LAS HORQUETAS','9400'),
-(23,'MINA 3','9407')
+(23,'MINA 3','9407');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (23,'MORRO CHICO','9407'),
 (23,'PALERMO AIKE','9400'),
@@ -6167,7 +6167,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (19,'PUERTO ALICIA','3363'),
 (19,'PUERTO AURORA','3363'),
 (19,'PUERTO INSUA','3363'),
-(19,'PUERTO LONDERO','3363')
+(19,'PUERTO LONDERO','3363');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (19,'PUERTO SAN MARTIN','3363'),
 (19,'SAN CARLOS','3363'),
@@ -7167,7 +7167,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (3,'LA CA','4715'),
 (3,'LA PIEDRA','4715'),
 (3,'LA PUERTA','4711'),
-(3,'LAS AGUITAS','4715')
+(3,'LAS AGUITAS','4715');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (3,'LAS BURRAS','4715'),
 (3,'LAS CHACRITAS','4711'),
@@ -8168,7 +8168,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (16,'TUCURU','3540'),
 (16,'VILLA ANGELA','3540'),
 (16,'LA TIGRA','3701'),
-(16,'LA CLOTILDE','3701')
+(16,'LA CLOTILDE','3701');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (16,'MALBALAES','3701'),
 (16,'SAN BERNARDO','3701'),
@@ -9169,7 +9169,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'MONTE LARGO','4117'),
 (15,'MOYA','4117'),
 (15,'NUEVO PUEBLO LA FLORIDA','4117'),
-(15,'PACARA','4111')
+(15,'PACARA','4111');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'PACARA PINTADO','4111'),
 (15,'PALMAS REDONDAS','4178'),
@@ -10169,7 +10169,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (7,'MINA BELGICA','4644'),
 (7,'MINA PULPERA','4644'),
 (7,'MINA SAN FRANCISCO','4644'),
-(7,'PUMAHUASI','4644')
+(7,'PUMAHUASI','4644');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (7,'REDONDA','4644'),
 (7,'RIO COLORADO','4644'),
@@ -11169,7 +11169,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (12,'LOS AGUADOS','5719'),
 (12,'LOS ALGARROBOS','5703'),
 (12,'LOS ARADITOS','5719'),
-(12,'LOS CERRITOS','5719')
+(12,'LOS CERRITOS','5719');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (12,'LOS CHA','5703'),
 (12,'LOS CHANCAROS','5719'),
@@ -12169,7 +12169,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (11,'VILLA BARBOZA','5427'),
 (11,'VILLA NACUSI','5427'),
 (11,'ALBARRACIN','5425'),
-(11,'BARRIO OBRERO RAWSON','5425')
+(11,'BARRIO OBRERO RAWSON','5425');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (11,'CAPITAN LAZO','5423'),
 (11,'COLONIA CENTENARIO','5421'),
@@ -13170,7 +13170,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (21,'EL GUANACO','6380'),
 (21,'EL BOQUERON','8200'),
 (8,'PTO LOS AMARILLOS','5636'),
-(21,'EX ESCUELA HOGAR NRO 5','8200')
+(21,'EX ESCUELA HOGAR NRO 5','8200');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (8,'CIUDAD OESTE','5634'),
 (8,'EL BUEN PASTOR','5634'),
@@ -14171,7 +14171,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (8,'MELITON CAMPOS','5594'),
 (8,'MIGUEZ','5594'),
 (8,'MORON CHICO','5594'),
-(8,'MORON VIEJO','5594')
+(8,'MORON VIEJO','5594');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (6,'PASO MARGARI','3200'),
 (8,'N ZAPATA','5594'),
@@ -15171,7 +15171,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (6,'PUERTO LA ESMERALDA','3190'),
 (11,'VILLA PATRICIAS SANJUANINAS','5411'),
 (5,'NARANJATY','3405'),
-(11,'VILLA RIZZO','5411')
+(11,'VILLA RIZZO','5411');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (11,'VILLA RUFINO GOMEZ','5411'),
 (5,'OBRAJE CUE','3405'),
@@ -16170,7 +16170,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (6,'NOVIBUCO PRIMERO','3170'),
 (9,'SIERRA BRAVA','5301'),
 (8,'BARREAL JOSE LUIS','5613'),
-(8,'BA','5611')
+(8,'BA','5611');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (19,'PUERTO AZARA','3350'),
 (19,'LOTE 117','3317'),
@@ -17171,7 +17171,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (12,'LA FLECHA','5741'),
 (12,'LA ISABEL','5743'),
 (12,'LA JOSEFINA','5741'),
-(12,'LA PALMIRA','5741')
+(12,'LA PALMIRA','5741');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (12,'LA PRIMAVERA','5730'),
 (12,'LA REALIDAD','5741'),
@@ -18172,7 +18172,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (14,'CARBON POZO','4324'),
 (4,'LA SIERRITA','5813'),
 (14,'CAZADORES','4324'),
-(14,'COLLUJLIOJ','4324')
+(14,'COLLUJLIOJ','4324');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'POZO ALTO','4111'),
 (14,'CORASPINO','4324'),
@@ -19152,7 +19152,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (7,'SAN GABRIEL','4608'),
 (18,'PRIMAVERA','3610'),
 (4,'SAN JUANCITO','5249'),
-(7,'SAN JUANCITO','4608')
+(7,'SAN JUANCITO','4608');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'CAMPO DE TALAMAYO','4158'),
 (18,'PUNTA GUIA','3610'),
@@ -19754,7 +19754,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'LA HOYADA','4105'),
 (15,'LA MANGA','4103'),
 (15,'LA RAMADA','4103'),
-(15,'LA SALA','4119')
+(15,'LA SALA','4119');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (15,'LAGUNA GRANDE','4103'),
 (4,'LOS QUEBRACHITOS','5221'),
@@ -20174,7 +20174,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (4,'LA TRAVESIA','5875'),
 (4,'MANDALA','5284'),
 (4,'LA VENTANA','5870'),
-(4,'LAS CA','5870')
+(4,'LAS CA','5870');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (4,'MEDIA NARANJA','5281'),
 (4,'LAS ENCRUCIJADAS','5871'),
@@ -21174,7 +21174,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (4,'SAN BUENAVENTURA','5164'),
 (4,'SAN IGNACIO','5182'),
 (4,'SAN JOSE','5166'),
-(4,'SAN ROQUE','5149')
+(4,'SAN ROQUE','5149');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (4,'SAN SALVADOR','5282'),
 (4,'LA PATRIA','5871'),
@@ -22175,7 +22175,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (14,'POCITO DE LA LOMA','4233'),
 (14,'BUENOS AIRES','4230'),
 (14,'POZANCONES','4230'),
-(14,'TACO ATUN','4328')
+(14,'TACO ATUN','4328');
 INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (14,'POZO CERCADO','4203'),
 (14,'CA','4203'),
@@ -23142,15 +23142,7 @@ INSERT INTO Localidad (IdProvincia, Nombre, CodigoPostal) VALUES
 (3,'CANDELARIA','4231'),
 (8,'LAS VEGAS','5549');
 
-
-DBCC CHECKIDENT ('Proveedor', RESEED, 1);
-DBCC CHECKIDENT ('Cliente', RESEED, 1);
-DBCC CHECKIDENT ('Marca', RESEED, 1);
-DBCC CHECKIDENT ('Categoria', RESEED, 1);
-DBCC CHECKIDENT ('Producto', RESEED, 1);
-DBCC CHECKIDENT ('Usuario', RESEED, 1);
-DBCC CHECKIDENT ('Compra', RESEED, 1);
-DBCC CHECKIDENT ('Venta', RESEED, 1);
-
 INSERT INTO Usuario (NombreUsuario, Nombre, Apellido, Mail, FechaNacimiento, Clave, Administrador, FechaAlta, Activo)
 VALUES ('Nroggero', 'NICOLAS', 'ROGGERO', 'roggero.n@gmail.com', '1992-04-03', '36602182', 1, NOW(), 1);
+INSERT INTO Usuario (NombreUsuario, Nombre, Apellido, Mail, FechaNacimiento, Clave, Administrador, FechaAlta, Activo)
+VALUES ('29900146', 'FABRICIO', 'NEGRI', 'fnegri21@hotmail.com	', '1983-04-29', 'Prisci29', 1, NOW(), 1);
