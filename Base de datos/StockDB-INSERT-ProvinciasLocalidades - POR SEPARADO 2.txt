@@ -23154,4 +23154,3 @@ DBCC CHECKIDENT ('Venta', RESEED, 1);
 
 INSERT INTO Usuario (NombreUsuario, Nombre, Apellido, Mail, FechaNacimiento, Clave, Administrador, FechaAlta, Activo)
 VALUES ('Nroggero', 'NICOLAS', 'ROGGERO', 'roggero.n@gmail.com', '1992-04-03', '36602182', 1, NOW(), 1);
-VALUES ('29900146', 'FABRICIO', 'NEGRI', 'fnegri21@hotmail.com	', '1983-04-29', 'Prisci29', 1, NOW(), 1);
